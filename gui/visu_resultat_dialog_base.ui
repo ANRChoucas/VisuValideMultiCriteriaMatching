@@ -1,0 +1,465 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>DockWidget</class>
+ <widget class="QDockWidget" name="DockWidget">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>397</width>
+    <height>631</height>
+   </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+    <horstretch>0</horstretch>
+    <verstretch>150</verstretch>
+   </sizepolicy>
+  </property>
+  <property name="windowTitle">
+   <string>Visualisation des résultats d'appariement</string>
+  </property>
+  <widget class="QWidget" name="dockWidgetContents">
+   <widget class="QPushButton" name="btFermer">
+    <property name="geometry">
+     <rect>
+      <x>260</x>
+      <y>550</y>
+      <width>111</width>
+      <height>30</height>
+     </rect>
+    </property>
+    <property name="toolTip">
+     <string>Fermer le plugin</string>
+    </property>
+    <property name="text">
+     <string>Fermer</string>
+    </property>
+    <property name="icon">
+     <iconset>
+      <normaloff>:/plugins/VisuValideMultiCriteriaMatching/img/close.png</normaloff>:/plugins/VisuValideMultiCriteriaMatching/img/close.png</iconset>
+    </property>
+    <property name="iconSize">
+     <size>
+      <width>18</width>
+      <height>18</height>
+     </size>
+    </property>
+   </widget>
+   <widget class="QGroupBox" name="label_grille">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>70</y>
+      <width>371</width>
+      <height>101</height>
+     </rect>
+    </property>
+    <property name="title">
+     <string>Lecture</string>
+    </property>
+    <widget class="QPushButton" name="btSuiv">
+     <property name="geometry">
+      <rect>
+       <x>190</x>
+       <y>60</y>
+       <width>111</width>
+       <height>23</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>&gt;&gt;</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="btPrec">
+     <property name="geometry">
+      <rect>
+       <x>80</x>
+       <y>60</y>
+       <width>111</width>
+       <height>23</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>&lt;&lt;</string>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="currentId">
+     <property name="geometry">
+      <rect>
+       <x>170</x>
+       <y>20</y>
+       <width>61</width>
+       <height>21</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_cell_encours">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>20</y>
+       <width>131</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Feature ref en cours:</string>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QPushButton" name="btZoomGrille">
+    <property name="geometry">
+     <rect>
+      <x>150</x>
+      <y>550</y>
+      <width>111</width>
+      <height>30</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Zoom  ref</string>
+    </property>
+   </widget>
+   <widget class="QTableWidget" name="tableCoordFeu">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>180</y>
+      <width>381</width>
+      <height>201</height>
+     </rect>
+    </property>
+    <property name="rowCount">
+     <number>5</number>
+    </property>
+    <property name="columnCount">
+     <number>3</number>
+    </property>
+    <attribute name="horizontalHeaderDefaultSectionSize">
+     <number>108</number>
+    </attribute>
+    <attribute name="horizontalHeaderMinimumSectionSize">
+     <number>30</number>
+    </attribute>
+    <attribute name="verticalHeaderDefaultSectionSize">
+     <number>30</number>
+    </attribute>
+    <attribute name="verticalHeaderMinimumSectionSize">
+     <number>15</number>
+    </attribute>
+    <row/>
+    <row/>
+    <row/>
+    <row/>
+    <row/>
+    <column/>
+    <column/>
+    <column/>
+   </widget>
+   <widget class="QgsFileWidget" name="fileResultat">
+    <property name="geometry">
+     <rect>
+      <x>70</x>
+      <y>30</y>
+      <width>301</width>
+      <height>27</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_importer">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>10</y>
+      <width>251</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Fichier de résultat:</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="labelSeuil1">
+    <property name="geometry">
+     <rect>
+      <x>50</x>
+      <y>410</y>
+      <width>111</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Seuils distance 1:</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="D1_T1">
+    <property name="geometry">
+     <rect>
+      <x>170</x>
+      <y>410</y>
+      <width>70</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="D1_T2">
+    <property name="geometry">
+     <rect>
+      <x>240</x>
+      <y>410</y>
+      <width>70</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QLabel" name="labelSeuil2">
+    <property name="geometry">
+     <rect>
+      <x>50</x>
+      <y>430</y>
+      <width>111</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Seuils distance 2:</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="labelSeuil3">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>50</x>
+      <y>450</y>
+      <width>111</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Seuils distance 3:</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="labelSeuil4">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>50</x>
+      <y>470</y>
+      <width>111</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Seuils distance 4:</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="D2_T1">
+    <property name="geometry">
+     <rect>
+      <x>170</x>
+      <y>430</y>
+      <width>70</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="D3_T1">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>170</x>
+      <y>450</y>
+      <width>70</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="D4_T1">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>170</x>
+      <y>470</y>
+      <width>70</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="D2_T2">
+    <property name="geometry">
+     <rect>
+      <x>240</x>
+      <y>430</y>
+      <width>70</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="D3_T2">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>240</x>
+      <y>450</y>
+      <width>70</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="D4_T2">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>240</x>
+      <y>470</y>
+      <width>70</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_8">
+    <property name="geometry">
+     <rect>
+      <x>200</x>
+      <y>390</y>
+      <width>21</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>T1</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_9">
+    <property name="geometry">
+     <rect>
+      <x>270</x>
+      <y>390</y>
+      <width>21</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>T2</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="labelSeuil5">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>50</x>
+      <y>490</y>
+      <width>111</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Seuils distance 5:</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="D5_T1">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>170</x>
+      <y>490</y>
+      <width>70</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="D5_T2">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>240</x>
+      <y>490</y>
+      <width>70</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <zorder>label_grille</zorder>
+   <zorder>btFermer</zorder>
+   <zorder>btZoomGrille</zorder>
+   <zorder>tableCoordFeu</zorder>
+   <zorder>fileResultat</zorder>
+   <zorder>label_importer</zorder>
+   <zorder>labelSeuil1</zorder>
+   <zorder>D1_T1</zorder>
+   <zorder>D1_T2</zorder>
+   <zorder>labelSeuil2</zorder>
+   <zorder>labelSeuil3</zorder>
+   <zorder>labelSeuil4</zorder>
+   <zorder>D2_T1</zorder>
+   <zorder>D3_T1</zorder>
+   <zorder>D4_T1</zorder>
+   <zorder>D2_T2</zorder>
+   <zorder>D3_T2</zorder>
+   <zorder>D4_T2</zorder>
+   <zorder>label_8</zorder>
+   <zorder>label_9</zorder>
+   <zorder>labelSeuil5</zorder>
+   <zorder>D5_T1</zorder>
+   <zorder>D5_T2</zorder>
+  </widget>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>QgsFileWidget</class>
+   <extends>QWidget</extends>
+   <header>qgis.gui</header>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>
