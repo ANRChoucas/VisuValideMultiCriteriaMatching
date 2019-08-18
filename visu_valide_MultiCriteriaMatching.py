@@ -400,6 +400,10 @@ class VisuValideMultiCriteriaMatching:
                         
                         n = len(self.NOM_DISTANCES)
                         
+                        cand['pign1'] = tab[5 + 0 + n]
+                        cand['pign2'] = tab[5 + 1 + n]
+                        cand['decision'] = tab[5 + 2 + n]
+                        
                         for i in range(n):
                             cand[self.NOM_DISTANCES[i]] = tab[5 + i]
                         
@@ -547,7 +551,7 @@ class VisuValideMultiCriteriaMatching:
     
     
     def initTable(self, candList):
-        
+
         self.vide(self.dockwidget.tableCoordFeu)
         
         if (len(candList)) == 0:
@@ -559,7 +563,12 @@ class VisuValideMultiCriteriaMatching:
             orange = QColor(255,196,109)
             vert = QColor(0,255,0)
             
-            
+            nbApp = 0
+            nbNonApp = 0
+            nbIndecis = 0
+            labelRes = ''
+            pign1 = ''
+            pign2 = ''
             for i in range(len(candList)):
                 
                 candidat = candList[i]
@@ -602,40 +611,41 @@ class VisuValideMultiCriteriaMatching:
                     elif s < seuil2:
                         self.dockwidget.tableCoordFeu.item(n, 1 + i).setBackground(orange);
                     
-                    
+                isNA = False
+                if candidat['nom'] == 'NA':
+                    isNA = True
                 
-#                self.dockwidget.tableCoordFeu.setItem(n, 1, item2);
-#                s = float(candidat['da'])
-#                if s < seuil1DA:
-#                    self.dockwidget.tableCoordFeu.item(n, 1).setBackground(vert);
-#                elif s < seuil2DA:
-#                    self.dockwidget.tableCoordFeu.item(n, 1).setBackground(orange);
+                # print (candidat['decision'])
                 
-#                self.dockwidget.tableCoordFeu.setItem(n, 2, item3);
-#                s = float(candidat['dp'])
-#                if s < seuil1DP:
-#                    self.dockwidget.tableCoordFeu.item(n, 2).setBackground(vert);
-#                elif s < seuil2DP:
-#                    self.dockwidget.tableCoordFeu.item(n, 2).setBackground(orange);
-#                
-#                
-#                self.dockwidget.tableCoordFeu.setItem(n, 3, item4);
-#                s = float(candidat['ds'])
-#                if s < seuil1DS:
-#                    self.dockwidget.tableCoordFeu.item(n, 3).setBackground(vert);
-#                elif s < seuil2DS:
-#                    self.dockwidget.tableCoordFeu.item(n, 3).setBackground(orange);
-#                    
-#                
-#                self.dockwidget.tableCoordFeu.setItem(n, 4, item5);
-#                s = float(candidat['dh'])
-#                if s < seuil1DH:
-#                    self.dockwidget.tableCoordFeu.item(n, 4).setBackground(vert);
-#                elif s < seuil2DH:
-#                    self.dockwidget.tableCoordFeu.item(n, 4).setBackground(orange);
-                
-                
+                # decision et resultat
+                if (isNA and candidat['decision'] == 'true'):
+                    nbNonApp = nbNonApp + 1
+						
+                if (not isNA and candidat['decision'] == 'true'):
+                    nbApp = nbApp + 1
+                    labelRes = candidat['id']
+                    pign1 = candidat['pign1']
+                    pign2 = candidat['pign2']
+						
+                if (isNA and candidat['decision'] == 'indécis'):
+                    nbIndecis = nbIndecis + 1
+						
                 self.dockwidget.tableCoordFeu.scrollToBottom()
+                
+                if nbIndecis > 0:
+                    self.dockwidget.labelResultat.setText('INDECIS')
+                    self.dockwidget.labelResultat.setStyleSheet('color:black;font: 8pt MS Shell Dlg 2;background-color:orange')
+                elif nbNonApp > 0:
+                    self.dockwidget.labelResultat.setText("Pas d'appariement")
+                    self.dockwidget.labelResultat.setStyleSheet('color:black;font: 8pt MS Shell Dlg 2;background-color:white')
+                elif nbApp > 0:
+                    self.dockwidget.labelResultat.setText("Appariement avec " + labelRes)
+                    self.dockwidget.labelResultat.setStyleSheet('color:black;font: 8pt MS Shell Dlg 2;background-color:lightgreen')
+                #else:
+                #    print ('Inconnu')
+            
+                self.dockwidget.pign1.setText(pign1)
+                self.dockwidget.pign2.setText(pign2)
                 
         
         header = self.dockwidget.tableCoordFeu.horizontalHeader()
@@ -645,6 +655,8 @@ class VisuValideMultiCriteriaMatching:
         header.setResizeMode(3, QtGui.QHeaderView.ResizeToContents)
         header.setResizeMode(4, QtGui.QHeaderView.ResizeToContents)
         
+        
+    
     
     def vide(self, table):
 
