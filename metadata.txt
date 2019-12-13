@@ -8,21 +8,28 @@
 
 [general]
 name=VisuValideMultiCriteriaMatching
-qgisMinimumVersion=2.0
+qgisMinimumVersion=3.0
 description=Visualisation et validation des résultats d'appariement multi-critères
 version=1.0
 author=Marie-Dominique Van Damme
 email=marie-dominique.van-damme@ign.fr
 
+about=VisuValideMultiCriteriaMatching
+
+
+
 # End of mandatory metadata
 
 # Recommended items:
 
+hasProcessingProvider=no
+
+# Tags are comma separated with spaces allowed
+tags=python
+
 # Uncomment the following line and add your changelog:
 # changelog=
 
-# Tags are comma separated with spaces allowed
-tags=tags
 
 homepage=http://github.com
 tracker=github.com

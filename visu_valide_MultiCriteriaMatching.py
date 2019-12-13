@@ -1,11 +1,10 @@
 # -*- coding: utf-8 -*-
 """
 /***************************************************************************
- PoussePousseEditData
+ VisuValideMultiCriteriaMatching
                                  A QGIS plugin
                                  
- PoussePousseEditData est un plugIn QGis de création et de contrôle 
-       de jeu de données géographiques sur fond cartographique
+ VisuValideMultiCriteriaMatching est un plugIn QGis pour valider l'appariement
                               -------------------
         begin                : 2018-07-09
         git sha              : $Format:%H$
@@ -22,29 +21,27 @@
  *                                                                         *
  ***************************************************************************/
 """
-#from PyQt4.QtCore import QSettings, QTranslator, qVersion, QCoreApplication, Qt
-from PyQt4.QtCore import Qt
-from PyQt4.QtGui import QAction, QIcon
-#from PyQt4.QtGui import QFont
 
-from qgis.core import QgsVectorLayer
-#from qgis.core import QgsMapLayer
-from qgis.core import QgsMapLayerRegistry
+from PyQt5.QtCore import Qt, QVariant
+from PyQt5.QtGui import QColor
+from PyQt5 import QtGui
+from PyQt5.QtWidgets import QTableWidgetItem
+
+from qgis.PyQt.QtGui import QIcon
+from qgis.PyQt.QtWidgets import QAction
+
+from qgis.core import QgsProject, QgsVectorLayer
 from qgis.core import QgsGeometry, QgsFeature
-from qgis.core import QgsFillSymbolV2, QgsSingleSymbolRendererV2
-#from qgis.core import QgsSymbolV2, QgsRuleBasedRendererV2
+from qgis.core import QgsFillSymbol, QgsSingleSymbolRenderer
 from qgis.core import QgsField
-from PyQt4.QtCore import QVariant
 from qgis.core import QgsPalLayerSettings
-from PyQt4.QtGui import QColor
-from PyQt4.QtGui import QTableWidgetItem
-from PyQt4 import QtGui
+
 
 # Initialize Qt resources from file resources.py
-from resources import resources
+from .resources import resources
 
 # Import the code for the gui
-from gui.visu_resultat_dialog import VisuResultatDialog
+from .gui.visu_resultat_dialog import VisuResultatDialog
 
 
 import os.path
@@ -338,7 +335,7 @@ class VisuValideMultiCriteriaMatching:
         s = QgsFillSymbolV2.createSimple(props)
         self.layerIGN.setRendererV2(QgsSingleSymbolRendererV2(s))
                 
-        QgsMapLayerRegistry.instance().addMapLayer(self.layerIGN)
+        QgsProject.instance().addMapLayer(self.layerIGN)
         
         
         
