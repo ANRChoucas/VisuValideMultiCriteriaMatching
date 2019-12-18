@@ -1,3 +1,8 @@
 /gui/*.pyc
 /*.pyc
 /resources/*.pyc
+__pycache__/
+gui/__pycache__/
+resources/__pycache__/
+util/
+

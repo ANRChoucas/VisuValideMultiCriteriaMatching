@@ -24,7 +24,7 @@
 
 from PyQt5.QtCore import Qt, QVariant
 from PyQt5.QtGui import QColor
-from PyQt5 import QtGui
+from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import QTableWidgetItem
 
 from qgis.PyQt.QtGui import QIcon
@@ -32,9 +32,8 @@ from qgis.PyQt.QtWidgets import QAction
 
 from qgis.core import QgsProject, QgsVectorLayer
 from qgis.core import QgsGeometry, QgsFeature
-from qgis.core import QgsFillSymbol, QgsSingleSymbolRenderer
 from qgis.core import QgsField
-from qgis.core import QgsPalLayerSettings
+
 
 
 # Initialize Qt resources from file resources.py
@@ -43,6 +42,8 @@ from .resources import resources
 # Import the code for the gui
 from .gui.visu_resultat_dialog import VisuResultatDialog
 
+from .util import utilFichier as util
+from .util import utilStyle as style
 
 import os.path
 import os
@@ -72,8 +73,6 @@ class VisuValideMultiCriteriaMatching:
         self.toolbar = self.iface.addToolBar(u'VisuValideMultiCriteriaMatching')
         self.toolbar.setObjectName(u'VisuValideMultiCriteriaMatching')
         
-        self.uriSettings = os.path.join(self.plugin_dir, 'settings.conf')
-
 
     def add_action(
         self,
@@ -119,7 +118,7 @@ class VisuValideMultiCriteriaMatching:
         self.add_action(
             icon_path,
             text = "Panneau de contrôle pour visualiser et valider l'appariement",
-            callback = self.initPoussePousse,
+            callback = self.initWidget,
             parent = self.iface.mainWindow())
 
 
@@ -157,13 +156,15 @@ class VisuValideMultiCriteriaMatching:
         
         # ----------------------------------------------------------------------------
         # supprime les layers
-        if self.layerIGN != None:
-            QgsMapLayerRegistry.instance().removeMapLayers( [self.layerIGN.id()] )
-        if self.layerOSM != None:
-            QgsMapLayerRegistry.instance().removeMapLayers( [self.layerOSM.id()] )
+        if self.layerCOMP != None:
+            QgsProject.instance().removeMapLayers( [self.layerCOMP.id()] )
+            
+        if self.layerREF != None:
+            QgsProject.instance().removeMapLayers( [self.layerREF.id()] )
 
 
-    def initPoussePousse(self):
+    
+    def initWidget(self):
         """Run method that performs all the real work"""
         
         if not self.pluginIsActive:
@@ -174,8 +175,8 @@ class VisuValideMultiCriteriaMatching:
                 
                 self.dockwidget = VisuResultatDialog()
                 
-                self.layerIGN = None
-                self.layerOSM = None
+                self.layerCOMP = None
+                self.layerREF = None
                 
                 self.dockwidget.btPrec.setStyleSheet('color : black;font: 8pt MS Shell Dlg 2')
                 self.dockwidget.btSuiv.setStyleSheet('color : black;font: 8pt MS Shell Dlg 2')
@@ -221,64 +222,22 @@ class VisuValideMultiCriteriaMatching:
         # print (uriGrille)
         
         # On ouvre le fichier pour le type de la géométrie et les distances
-        self.NOM_DISTANCES = []
+        self.DISTANCE_NOM = []
+        self.CRITERE_SEUIL = []
         self.TYPE_GEOM = ''
+        self.seuilIndecision = -1
         
-        n = 0
-        with open(self.uriGrille, 'r') as file:
-            entete = True
-            ligne1 = True
-            for line in file:
-                if entete:
-                    entete = False
-                    
-                    # split
-                    tab = line.split(";")
-                    
-                    for i in range(len(tab)):
-                        if tab[i] != None and tab[i].strip() != '':
-                            n = n + 1
-                    # n = len(tab)
-                    nb_distance = n - 10
-                    # print (nb_distance)
-                    
-                    for i in range (5, 5 + nb_distance):
-                        self.NOM_DISTANCES.append(tab[i])
-                    # print (NOM_DISTANCES)
-                    
-                else:
-                    # type de la géométrie à partir de la deuxième ligne 
-                    if ligne1:
-                        ligne1 = False
-                    else: 
-                        # split
-                        tab = line.split(";")
-                        wktGeom = tab[n - 2]
-                        
-                        tabGeom = wktGeom.split("(")
-                        typeGeom = tabGeom[0].strip()
-                        # print (typeGeom +"--")
-                        
-                        if typeGeom == 'POINT':
-                            self.TYPE_GEOM = 'Point'
-                        if typeGeom == 'LINESTRING':
-                            self.TYPE_GEOM = 'Linestring'
-                        if typeGeom == 'POLYGON':
-                            self.TYPE_GEOM = 'Polygon'
-                        if typeGeom == 'MULTILINESTRING':
-                            self.TYPE_GEOM = 'MultiLinestring'
-                        if typeGeom == 'MULTIPOINT':
-                            self.TYPE_GEOM = 'MultiPoint'
-                        if typeGeom == 'MULTIPOLYGON':
-                            self.TYPE_GEOM = 'MultiPolygon'
-                        # print (self.TYPE_GEOM)
-                        
-                        break
+        (DISTANCE_NOM, TYPE_GEOM, CRITERE_SEUIL, seuilIndecision) = util.entete(self.uriGrille)
+        self.DISTANCE_NOM = DISTANCE_NOM
+        self.TYPE_GEOM = TYPE_GEOM
+        self.CRITERE_SEUIL = CRITERE_SEUIL
+        self.seuilIndecision = seuilIndecision
+        
         
         self.dockwidget.currentId.setText("-1")
         
-        self.createLayerOSM()
-        self.createLayerIGN()
+        self.createLayerComp()
+        self.createLayerRef()
         
         self.dockwidget.labelSeuil1.setEnabled(False)
         self.dockwidget.D1_T1.setEnabled(False)
@@ -301,139 +260,95 @@ class VisuValideMultiCriteriaMatching:
         self.dockwidget.D5_T2.setEnabled(False)
         
         
-        for i in range (len(self.NOM_DISTANCES)):
-            if i == 0:
-                self.dockwidget.labelSeuil1.setEnabled(True)
-                self.dockwidget.D1_T1.setEnabled(True)
-                self.dockwidget.D1_T2.setEnabled(True)
-            if i == 1:
-                self.dockwidget.labelSeuil2.setEnabled(True)
-                self.dockwidget.D2_T1.setEnabled(True)
-                self.dockwidget.D2_T2.setEnabled(True)
-            if i == 2:
-                self.dockwidget.labelSeuil3.setEnabled(True)
-                self.dockwidget.D3_T1.setEnabled(True)
-                self.dockwidget.D3_T2.setEnabled(True)
-            if i == 3:
-                self.dockwidget.labelSeuil4.setEnabled(True)
-                self.dockwidget.D4_T1.setEnabled(True)
-                self.dockwidget.D4_T2.setEnabled(True)
-            if i == 4:
-                self.dockwidget.labelSeuil5.setEnabled(True)
-                self.dockwidget.D5_T1.setEnabled(True)
-                self.dockwidget.D5_T2.setEnabled(True)
+#        for i in range (len(self.NOM_DISTANCES)):
+#            if i == 0:
+#                self.dockwidget.labelSeuil1.setEnabled(True)
+#                self.dockwidget.D1_T1.setEnabled(True)
+#                self.dockwidget.D1_T2.setEnabled(True)
+#            if i == 1:
+#                self.dockwidget.labelSeuil2.setEnabled(True)
+#                self.dockwidget.D2_T1.setEnabled(True)
+#                self.dockwidget.D2_T2.setEnabled(True)
+#            if i == 2:
+#                self.dockwidget.labelSeuil3.setEnabled(True)
+#                self.dockwidget.D3_T1.setEnabled(True)
+#                self.dockwidget.D3_T2.setEnabled(True)
+#            if i == 3:
+#                self.dockwidget.labelSeuil4.setEnabled(True)
+#                self.dockwidget.D4_T1.setEnabled(True)
+#                self.dockwidget.D4_T2.setEnabled(True)
+#            if i == 4:
+#                self.dockwidget.labelSeuil5.setEnabled(True)
+#                self.dockwidget.D5_T1.setEnabled(True)
+#                self.dockwidget.D5_T2.setEnabled(True)
                 
         
-    def createLayerIGN(self):
-        
+    def createLayerRef(self):
         # ======================================================================================
         # Layer IGN
-        self.layerIGN = QgsVectorLayer (self.TYPE_GEOM + "?crs=epsg:2154", "REF", "memory")
+        self.layerREF = QgsVectorLayer (self.TYPE_GEOM + "?crs=epsg:2154", "REF", "memory")
         
-        # Style 
-        props = {'color': '241,241,241,0', 'size':'1', 'color_border' : '255,0,0'}
-        s = QgsFillSymbolV2.createSimple(props)
-        self.layerIGN.setRendererV2(QgsSingleSymbolRendererV2(s))
-                
-        QgsProject.instance().addMapLayer(self.layerIGN)
+        if self.TYPE_GEOM == 'Polygon' or self.TYPE_GEOM == 'MultiPolygon':
+            self.layerREF = style.getRefPolygoneStyle(self.layerREF)
+            
+            
+        if self.TYPE_GEOM == 'Point' or self.TYPE_GEOM == 'MultiPoint':
+            self.layerREF = style.getRefPointStyle(self.layerREF)
+            
+        QgsProject.instance().addMapLayer(self.layerREF)
+            
+            
         
-        
-        
-    def createLayerOSM(self):
+
+    def createLayerComp(self):
 
         # ======================================================================================
         # Layer OSM
-        self.layerOSM = QgsVectorLayer (self.TYPE_GEOM + "?crs=epsg:2154", "COMP", "memory")
+        self.layerCOMP = QgsVectorLayer (self.TYPE_GEOM + "?crs=epsg:2154", "COMP", "memory")
         
         # Eventuellement si vous voulez ajouter des attributs
-        pr = self.layerOSM.dataProvider()
+        pr = self.layerCOMP.dataProvider()
         pr.addAttributes([QgsField("position", QVariant.String)])
-        self.layerOSM.commitChanges()
+        self.layerCOMP.commitChanges()
         
-        # Style 
-        props = {'color': '150,150,210,1', 'size':'1', 'color_border' : '0,0,0'}
-        s = QgsFillSymbolV2.createSimple(props)
-        self.layerOSM.setRendererV2(QgsSingleSymbolRendererV2(s))
-        
-        # Etiquette
-        labelAdresse = QgsPalLayerSettings()
-        labelAdresse.readFromLayer(self.layerOSM)
-        labelAdresse.enabled = True 
-        labelAdresse.textColor = QColor(0,0,0)
-
-        # On initialise un champ
-        labelAdresse.fieldName = 'position'
-
-        # Correspond à l'emplacement autour du point           
-        labelAdresse.placement = QgsPalLayerSettings.AroundPoint
-        labelAdresse.setDataDefinedProperty(QgsPalLayerSettings.Size, True, True, '8', '')
-        labelAdresse.dist = 1.5
-    
-        # On enregistre la couche
-        labelAdresse.writeToLayer(self.layerOSM) 
+        if self.TYPE_GEOM == 'Polygon' or self.TYPE_GEOM == 'MultiPolygon':
+            self.layerCOMP = style.getCompPolygoneStyle(self.layerCOMP)
+            
+        if self.TYPE_GEOM == 'Point' or self.TYPE_GEOM == 'MultiPoint':
+            self.layerCOMP = style.getCompPointStyle(self.layerCOMP)
                 
-        QgsMapLayerRegistry.instance().addMapLayer(self.layerOSM)
-        
+        QgsProject.instance().addMapLayer(self.layerCOMP)
         
     
     def afficheContexte(self, currId):
         
-        candList = []
-        with open(self.uriGrille, 'r') as file:
-            entete = True
-            for line in file:
-                if entete:
-                    entete = False
-                else:
-                    # split
-                    tab = line.split(";")
-                    idref = tab[0]
-                    
-                    if currId == idref:
-                        cand = dict()
-                        cand['num'] = tab[2]    # 'num'
-                        cand['id'] = tab[3]     # 'id'
-                        cand['nom'] = tab[4]    # 'nom'
-                        
-                        n = len(self.NOM_DISTANCES)
-                        
-                        cand['pign1'] = tab[5 + 0 + n]
-                        cand['pign2'] = tab[5 + 1 + n]
-                        cand['decision'] = tab[5 + 2 + n]
-                        
-                        for i in range(n):
-                            cand[self.NOM_DISTANCES[i]] = tab[5 + i]
-                        
-                        cand['geomref'] = tab[5 + 3 + n]
-                        cand['geomcomp'] = tab[5 + 3 + n + 1]
-                        
-                        candList.append(cand)
-                
-            file.close()
-            
+        self.removeFeatures()
+        
+        candList = util.getCandidat(self.uriGrille, currId, self.DISTANCE_NOM)
+        
         # print (len(candList))
         if len(candList) > 0:
                 
             candidat = candList[1]
             
-            self.removeFeatures()
+            
             
             # ======================================================================================
-            # Layer IGN
-            pr = self.layerIGN.dataProvider()
-            self.layerIGN.startEditing()
+            # Layer REF
+            pr = self.layerREF.dataProvider()
+            self.layerREF.startEditing()
                 
             poly = QgsFeature()
             poly.setGeometry(QgsGeometry.fromWkt(candidat['geomref']))
             pr.addFeatures([poly]) 
                 
             # Sauvegarde les changements
-            self.layerIGN.commitChanges()
+            self.layerREF.commitChanges()
         
             # ======================================================================================
             # Layer OSM
-            pr = self.layerOSM.dataProvider()
-            self.layerOSM.startEditing()
+            pr = self.layerCOMP.dataProvider()
+            self.layerCOMP.startEditing()
                 
             for i in range(len(candList)):
                 if i > 0:
@@ -445,18 +360,18 @@ class VisuValideMultiCriteriaMatching:
                 
                 
             # Sauvegarde les changements
-            self.layerOSM.commitChanges()
+            self.layerCOMP.commitChanges()
             
             # Zoom
             self.zoom()
             
         # remplir le tableau
-        self.initTable(candList)
+        # self.initTable(candList)
             
         
     def zoom(self):
         # ZOOM
-        extent = self.layerOSM.extent()
+        extent = self.layerCOMP.extent()
         self.iface.mapCanvas().setExtent(extent)
         self.iface.mapCanvas().refresh()
         
@@ -465,34 +380,9 @@ class VisuValideMultiCriteriaMatching:
         
         # On recupere l'id en cours
         currId = self.dockwidget.currentId.text()
-        id = currId
+        id = util.getLignePrec(self.uriGrille, currId)
         
-        with open(self.uriGrille, 'r') as file:
-            entete = True
-            # cpt = 0
-            for line in file:
-                if entete:
-                    # txtEntete = line
-                    entete = False
-                    # print (txtEntete)
-                else:
-                    # split
-                    tab = line.split(";")
-                    idref = tab[0]
-                    
-                    if currId == "-1":
-                        id = idref
-                        break
-                        
-                    else: 
-                        if currId == idref:
-                            id = str(int(id) - 1)
-                            break
-                
-            file.close()
-            
-            
-        self.dockwidget.currentId.setText(id)
+        self.dockwidget.currentId.setText(str(id))
         self.afficheContexte(id)
         
         
@@ -500,57 +390,36 @@ class VisuValideMultiCriteriaMatching:
         
         # On recupere l'id en cours
         currId = self.dockwidget.currentId.text()
-        id = currId
+        id = util.getLigneSuiv(self.uriGrille, currId)
         
-        with open(self.uriGrille, 'r') as file:
-            entete = True
-            for line in file:
-                if entete:
-                    entete = False
-                else:
-                    # split
-                    tab = line.split(";")
-                    idref = tab[0]
-                    
-                    if currId == "-1":
-                        id = idref
-                        break
-                        
-                    else: 
-                        if currId == idref:
-                            id = str(int(id) + 1)
-                            break
-                
-            file.close()
-            
-            
-        self.dockwidget.currentId.setText(id)
+        self.dockwidget.currentId.setText(str(id))
         self.afficheContexte(id)
                 
               
     def removeFeatures(self):
-        self.layerOSM.startEditing()
+        self.layerREF.startEditing()
     
-        for feature in self.layerOSM.getFeatures():
-            self.layerOSM.deleteFeature(feature.id())
+        for feature in self.layerREF.getFeatures():
+            self.layerREF.deleteFeature(feature.id())
         
         # commit to stop editing the layer
-        self.layerOSM.commitChanges()
+        self.layerREF.commitChanges()
         
+        # ===========================================
         
-        self.layerIGN.startEditing()
+        self.layerCOMP.startEditing()
     
-        for feature in self.layerIGN.getFeatures():
-            self.layerIGN.deleteFeature(feature.id())
+        for feature in self.layerCOMP.getFeatures():
+            self.layerCOMP.deleteFeature(feature.id())
         
         # commit to stop editing the layer
-        self.layerIGN.commitChanges()
+        self.layerCOMP.commitChanges()
     
     
     def initTable(self, candList):
-
-        self.vide(self.dockwidget.tableCoordFeu)
-        
+#
+#        self.vide(self.dockwidget.tableCoordFeu)
+#        
         if (len(candList)) == 0:
             self.dockwidget.tableCoordFeu.setRowCount(0)
             self.dockwidget.tableCoordFeu.setColumnCount(0)
@@ -646,11 +515,11 @@ class VisuValideMultiCriteriaMatching:
                 
         
         header = self.dockwidget.tableCoordFeu.horizontalHeader()
-        header.setResizeMode(0, QtGui.QHeaderView.ResizeToContents)
-        header.setResizeMode(1, QtGui.QHeaderView.ResizeToContents)
-        header.setResizeMode(2, QtGui.QHeaderView.ResizeToContents)
-        header.setResizeMode(3, QtGui.QHeaderView.ResizeToContents)
-        header.setResizeMode(4, QtGui.QHeaderView.ResizeToContents)
+        header.setSectionResizeMode(0, QtWidgets.QHeaderView.ResizeToContents)
+        header.setSectionResizeMode(1, QtWidgets.QHeaderView.ResizeToContents)
+        header.setSectionResizeMode(2, QtWidgets.QHeaderView.ResizeToContents)
+        header.setSectionResizeMode(3, QtWidgets.QHeaderView.ResizeToContents)
+        header.setSectionResizeMode(4, QtWidgets.QHeaderView.ResizeToContents)
         
         
     
