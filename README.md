@@ -17,11 +17,15 @@ Ce plugIn permet de réaliser la validation manuelle plus facilement.
 
 # Installation
 
-VisuValideMultiCriteriaMatching est un plugin pour le logiciel QGIS. Il est donc nécessaire que ce dernier soit installé sur l’ordinateur. 
-QGIS peut être téléchargé gratuitement via l’URL suivant : http://www.qgis.org/fr/site/
+VisuValideMultiCriteriaMatching est un plugin pour le logiciel QGis. Il est donc nécessaire que ce dernier soit installé sur l’ordinateur. 
+QGis peut être téléchargé gratuitement via l’URL suivant : http://www.qgis.org/fr/site/
 
-Le plugin a été testé avec succès sur les versions 3.4 de QGIS. 
+Le plugin a été testé avec succès sur les versions 3.4 de QGis. 
 
 Le code source du plugIn doit être installé dans le répertoire des plugins de Qgis:
 * sous windows: C:/Utilisateurs/glagaffe/AppData/Roaming/QGIS/QGIS3/profiles/default/python/plugins
 * sous linux: /home/glagaffe/.local/share/QGIS/QGIS3/profiles/default/python/plugins/
+
+# Guide d'utilisation
+
+Commencer par charger le fichier de résultat en sortie de l'algorithme **MultiCriteriaMatching**
