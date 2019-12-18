@@ -29,3 +29,5 @@ Le code source du plugIn doit être installé dans le répertoire des plugins de
 # Guide d'utilisation
 
 Commencer par charger le fichier de résultat en sortie de l'algorithme **MultiCriteriaMatching**
+
+![GitHub Logo](/doc/PlugInVisuMatchingMultiCrit.png)
