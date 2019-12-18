@@ -260,27 +260,27 @@ class VisuValideMultiCriteriaMatching:
         self.dockwidget.D5_T2.setEnabled(False)
         
         
-#        for i in range (len(self.NOM_DISTANCES)):
-#            if i == 0:
-#                self.dockwidget.labelSeuil1.setEnabled(True)
-#                self.dockwidget.D1_T1.setEnabled(True)
-#                self.dockwidget.D1_T2.setEnabled(True)
-#            if i == 1:
-#                self.dockwidget.labelSeuil2.setEnabled(True)
-#                self.dockwidget.D2_T1.setEnabled(True)
-#                self.dockwidget.D2_T2.setEnabled(True)
-#            if i == 2:
-#                self.dockwidget.labelSeuil3.setEnabled(True)
-#                self.dockwidget.D3_T1.setEnabled(True)
-#                self.dockwidget.D3_T2.setEnabled(True)
-#            if i == 3:
-#                self.dockwidget.labelSeuil4.setEnabled(True)
-#                self.dockwidget.D4_T1.setEnabled(True)
-#                self.dockwidget.D4_T2.setEnabled(True)
-#            if i == 4:
-#                self.dockwidget.labelSeuil5.setEnabled(True)
-#                self.dockwidget.D5_T1.setEnabled(True)
-#                self.dockwidget.D5_T2.setEnabled(True)
+        for i in range (len(self.DISTANCE_NOM)):
+            if i == 0:
+                self.dockwidget.labelSeuil1.setEnabled(True)
+                self.dockwidget.D1_T1.setEnabled(True)
+                self.dockwidget.D1_T2.setEnabled(True)
+            if i == 1:
+                self.dockwidget.labelSeuil2.setEnabled(True)
+                self.dockwidget.D2_T1.setEnabled(True)
+                self.dockwidget.D2_T2.setEnabled(True)
+            if i == 2:
+                self.dockwidget.labelSeuil3.setEnabled(True)
+                self.dockwidget.D3_T1.setEnabled(True)
+                self.dockwidget.D3_T2.setEnabled(True)
+            if i == 3:
+                self.dockwidget.labelSeuil4.setEnabled(True)
+                self.dockwidget.D4_T1.setEnabled(True)
+                self.dockwidget.D4_T2.setEnabled(True)
+            if i == 4:
+                self.dockwidget.labelSeuil5.setEnabled(True)
+                self.dockwidget.D5_T1.setEnabled(True)
+                self.dockwidget.D5_T2.setEnabled(True)
                 
         
     def createLayerRef(self):
@@ -318,6 +318,8 @@ class VisuValideMultiCriteriaMatching:
             self.layerCOMP = style.getCompPointStyle(self.layerCOMP)
                 
         QgsProject.instance().addMapLayer(self.layerCOMP)
+        
+        
         
     
     def afficheContexte(self, currId):
@@ -366,7 +368,7 @@ class VisuValideMultiCriteriaMatching:
             self.zoom()
             
         # remplir le tableau
-        # self.initTable(candList)
+        self.initTable(candList)
             
         
     def zoom(self):
@@ -447,9 +449,9 @@ class VisuValideMultiCriteriaMatching:
                 self.dockwidget.tableCoordFeu.setItem(n, 0, item1)
                 
                 
-                for i in range (len(self.NOM_DISTANCES)):
+                for i in range (len(self.DISTANCE_NOM)):
                     
-                    nom = self.NOM_DISTANCES[i]
+                    nom = self.DISTANCE_NOM[i]
                     itemDistance = QTableWidgetItem(str(candidat[nom]))    
                     self.dockwidget.tableCoordFeu.setItem(n, 1 + i, itemDistance)
                     
@@ -471,10 +473,11 @@ class VisuValideMultiCriteriaMatching:
                         seuil1 = float(self.dockwidget.D5_T1.text())
                         seuil2 = float(self.dockwidget.D5_T2.text())
                         
-                    
-                    if s < seuil1:
+                        
+                    # print (i)
+                    if s < seuil1 and i < 2:
                         self.dockwidget.tableCoordFeu.item(n, 1 + i).setBackground(vert);
-                    elif s < seuil2:
+                    elif s < seuil2 and i < 2:
                         self.dockwidget.tableCoordFeu.item(n, 1 + i).setBackground(orange);
                     
                 isNA = False
@@ -514,12 +517,12 @@ class VisuValideMultiCriteriaMatching:
                 self.dockwidget.pign2.setText(pign2)
                 
         
-        header = self.dockwidget.tableCoordFeu.horizontalHeader()
-        header.setSectionResizeMode(0, QtWidgets.QHeaderView.ResizeToContents)
-        header.setSectionResizeMode(1, QtWidgets.QHeaderView.ResizeToContents)
-        header.setSectionResizeMode(2, QtWidgets.QHeaderView.ResizeToContents)
-        header.setSectionResizeMode(3, QtWidgets.QHeaderView.ResizeToContents)
-        header.setSectionResizeMode(4, QtWidgets.QHeaderView.ResizeToContents)
+#        header = self.dockwidget.tableCoordFeu.horizontalHeader()
+#        header.setSectionResizeMode(0, QtWidgets.QHeaderView.ResizeToContents)
+#        header.setSectionResizeMode(1, QtWidgets.QHeaderView.ResizeToContents)
+#        header.setSectionResizeMode(2, QtWidgets.QHeaderView.ResizeToContents)
+#        header.setSectionResizeMode(3, QtWidgets.QHeaderView.ResizeToContents)
+#        header.setSectionResizeMode(4, QtWidgets.QHeaderView.ResizeToContents)
         
         
     
