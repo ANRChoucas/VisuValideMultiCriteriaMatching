@@ -193,18 +193,14 @@ class VisuValideMultiCriteriaMatching:
                 
                 self.dockwidget.fileResultat.fileChanged.connect(self.importFichier)
                 
-                self.dockwidget.D1_T1.setText("0.4")
-                self.dockwidget.D1_T2.setText("1.5")
+                self.dockwidget.rbID.toggled.connect(self.visuDistance)
+                self.dockwidget.rbD1.toggled.connect(self.visuDistance)
+                self.dockwidget.rbD2.toggled.connect(self.visuDistance)
+                self.dockwidget.rbD3.toggled.connect(self.visuDistance)
+                self.dockwidget.rbD4.toggled.connect(self.visuDistance)
+                self.dockwidget.rbD5.toggled.connect(self.visuDistance)
                 
-                self.dockwidget.D2_T1.setText("2")
-                self.dockwidget.D2_T2.setText("5")
-                
-                self.dockwidget.D3_T1.setText("0.2")
-                self.dockwidget.D3_T2.setText("0.8")
-                
-                self.dockwidget.D4_T1.setText("1.5")
-                self.dockwidget.D4_T2.setText("7")
-                
+
         self.iface.mapCanvas().refresh()
                 
         # show the dockwidget
@@ -219,7 +215,7 @@ class VisuValideMultiCriteriaMatching:
         
         # On charge le chemin du fichier de résultat
         self.uriGrille = self.dockwidget.fileResultat.filePath().strip()
-        # print (uriGrille)
+        # print (self.uriGrille)
         
         # On ouvre le fichier pour le type de la géométrie et les distances
         self.DISTANCE_NOM = []
@@ -233,6 +229,12 @@ class VisuValideMultiCriteriaMatching:
         self.CRITERE_SEUIL = CRITERE_SEUIL
         self.seuilIndecision = seuilIndecision
         
+        
+        self.dockwidget.seuilP.setText(str(self.seuilIndecision))
+        # self.dockwidget.seuilP.setEnabled(False)
+        
+        #self.dockwidget.pign1.setEnabled(False)
+        #self.dockwidget.pign2.setEnabled(False)
         
         self.dockwidget.currentId.setText("-1")
         
@@ -259,30 +261,95 @@ class VisuValideMultiCriteriaMatching:
         self.dockwidget.D5_T1.setEnabled(False)
         self.dockwidget.D5_T2.setEnabled(False)
         
+        # print (self.DISTANCE_NOM)
+        # print (self.CRITERE_SEUIL)
+        
+        self.dockwidget.rbD1.setEnabled(False)
+        self.dockwidget.rbD2.setEnabled(False)
+        self.dockwidget.rbD3.setEnabled(False)
+        self.dockwidget.rbD4.setEnabled(False)
+        self.dockwidget.rbD5.setEnabled(False)
+        
         
         for i in range (len(self.DISTANCE_NOM)):
             if i == 0:
                 self.dockwidget.labelSeuil1.setEnabled(True)
                 self.dockwidget.D1_T1.setEnabled(True)
                 self.dockwidget.D1_T2.setEnabled(True)
+                
+                seuils = self.CRITERE_SEUIL[i]
+                if len(seuils) > 0:
+                    self.dockwidget.D1_T1.setText(seuils[0])
+                if len(seuils) > 1:
+                    self.dockwidget.D1_T2.setText(seuils[1])
+                else:
+                    self.dockwidget.D1_T2.setEnabled(False)
+                
+                self.dockwidget.rbD1.setEnabled(True)
+            
             if i == 1:
                 self.dockwidget.labelSeuil2.setEnabled(True)
                 self.dockwidget.D2_T1.setEnabled(True)
                 self.dockwidget.D2_T2.setEnabled(True)
+                
+                seuils = self.CRITERE_SEUIL[i]
+                if len(seuils) > 0:
+                    self.dockwidget.D2_T1.setText(seuils[0])
+                if len(seuils) > 1:
+                    self.dockwidget.D2_T2.setText(seuils[1])
+                else:
+                    self.dockwidget.D2_T2.setEnabled(False)
+                    
+                self.dockwidget.rbD2.setEnabled(True)
+                    
             if i == 2:
                 self.dockwidget.labelSeuil3.setEnabled(True)
                 self.dockwidget.D3_T1.setEnabled(True)
                 self.dockwidget.D3_T2.setEnabled(True)
+                
+                seuils = self.CRITERE_SEUIL[i]
+                if len(seuils) > 0:
+                    self.dockwidget.D3_T1.setText(seuils[0])
+                if len(seuils) > 1:
+                    self.dockwidget.D3_T2.setText(seuils[1])
+                else:
+                    self.dockwidget.D3_T2.setEnabled(False)
+                    
+                self.dockwidget.rbD3.setEnabled(True)
+                    
             if i == 3:
                 self.dockwidget.labelSeuil4.setEnabled(True)
                 self.dockwidget.D4_T1.setEnabled(True)
                 self.dockwidget.D4_T2.setEnabled(True)
+                
+                seuils = self.CRITERE_SEUIL[i]
+                if len(seuils) > 0:
+                    self.dockwidget.D4_T1.setText(seuils[0])
+                if len(seuils) > 1:
+                    self.dockwidget.D4_T2.setText(seuils[1])
+                else:
+                    self.dockwidget.D4_T2.setEnabled(False)
+                    
+                self.dockwidget.rbD4.setEnabled(True)
+                    
             if i == 4:
                 self.dockwidget.labelSeuil5.setEnabled(True)
                 self.dockwidget.D5_T1.setEnabled(True)
                 self.dockwidget.D5_T2.setEnabled(True)
                 
+                seuils = self.CRITERE_SEUIL[i]
+                if len(seuils) > 0:
+                    self.dockwidget.D5_T1.setText(seuils[0])
+                if len(seuils) > 1:
+                    self.dockwidget.D5_T2.setText(seuils[1])
+                else:
+                    self.dockwidget.D5_T2.setEnabled(False)
+                    
+                self.dockwidget.rbD5.setEnabled(True)
         
+        
+        
+
     def createLayerRef(self):
         # ======================================================================================
         # Layer IGN
@@ -309,10 +376,23 @@ class VisuValideMultiCriteriaMatching:
         # Eventuellement si vous voulez ajouter des attributs
         pr = self.layerCOMP.dataProvider()
         pr.addAttributes([QgsField("position", QVariant.String)])
+        
+        for i in range (len(self.DISTANCE_NOM)):
+            if i == 0:
+                pr.addAttributes([QgsField(self.DISTANCE_NOM[i], QVariant.Double)])
+            if i == 1:
+                pr.addAttributes([QgsField(self.DISTANCE_NOM[i], QVariant.Double)])
+            if i == 2:
+                pr.addAttributes([QgsField(self.DISTANCE_NOM[i], QVariant.Double)])
+            if i == 3:
+                pr.addAttributes([QgsField(self.DISTANCE_NOM[i], QVariant.Double)])
+            if i == 4:
+                pr.addAttributes([QgsField(self.DISTANCE_NOM[i], QVariant.Double)])
+        
         self.layerCOMP.commitChanges()
         
         if self.TYPE_GEOM == 'Polygon' or self.TYPE_GEOM == 'MultiPolygon':
-            self.layerCOMP = style.getCompPolygoneStyle(self.layerCOMP)
+            self.layerCOMP = style.getCompPolygoneStyle(self.layerCOMP, 'position')
             
         if self.TYPE_GEOM == 'Point' or self.TYPE_GEOM == 'MultiPoint':
             self.layerCOMP = style.getCompPointStyle(self.layerCOMP)
@@ -332,8 +412,6 @@ class VisuValideMultiCriteriaMatching:
         if len(candList) > 0:
                 
             candidat = candList[1]
-            
-            
             
             # ======================================================================================
             # Layer REF
@@ -357,9 +435,17 @@ class VisuValideMultiCriteriaMatching:
                     poly = QgsFeature()
                     candidat = candList[i]
                     poly.setGeometry(QgsGeometry.fromWkt(candidat['geomcomp']))
-                    poly.setAttributes([candidat['id']])
+                    
+                    attrs = []
+                    attrs.append(str(candidat['id']))
+                    for i in range (len(self.DISTANCE_NOM)):
+                        nom = self.DISTANCE_NOM[i]
+                        s = float(candidat[nom])
+                        #print (s)
+                        attrs.append(s)
+                    poly.setAttributes(attrs)
+                    
                     pr.addFeatures([poly]) 
-                
                 
             # Sauvegarde les changements
             self.layerCOMP.commitChanges()
@@ -420,7 +506,7 @@ class VisuValideMultiCriteriaMatching:
     
     def initTable(self, candList):
 #
-#        self.vide(self.dockwidget.tableCoordFeu)
+        self.vide(self.dockwidget.tableCoordFeu)
 #        
         if (len(candList)) == 0:
             self.dockwidget.tableCoordFeu.setRowCount(0)
@@ -458,20 +544,30 @@ class VisuValideMultiCriteriaMatching:
                     s = float(candidat[nom])
                     
                     if i == 0:
-                        seuil1 = float(self.dockwidget.D1_T1.text())
-                        seuil2 = float(self.dockwidget.D1_T2.text())
+                        if self.dockwidget.D1_T1.isEnabled():
+                            seuil1 = float(self.dockwidget.D1_T1.text())
+                        if self.dockwidget.D1_T2.isEnabled():
+                            seuil2 = float(self.dockwidget.D1_T2.text())
                     if i == 1:
-                        seuil1 = float(self.dockwidget.D2_T1.text())
-                        seuil2 = float(self.dockwidget.D2_T2.text())
+                        if self.dockwidget.D2_T1.isEnabled():
+                            seuil1 = float(self.dockwidget.D2_T1.text())
+                        if self.dockwidget.D2_T2.isEnabled():
+                            seuil2 = float(self.dockwidget.D2_T2.text())
                     if i == 2:
-                        seuil1 = float(self.dockwidget.D3_T1.text())
-                        seuil2 = float(self.dockwidget.D3_T2.text())
+                        if self.dockwidget.D3_T1.isEnabled():
+                            seuil1 = float(self.dockwidget.D3_T1.text())
+                        if self.dockwidget.D3_T2.isEnabled():
+                            seuil2 = float(self.dockwidget.D3_T2.text())
                     if i == 3:
-                        seuil1 = float(self.dockwidget.D4_T1.text())
-                        seuil2 = float(self.dockwidget.D4_T2.text())
+                        if self.dockwidget.D4_T1.isEnabled():
+                            seuil1 = float(self.dockwidget.D4_T1.text())
+                        if self.dockwidget.D4_T2.isEnabled():
+                            seuil2 = float(self.dockwidget.D4_T2.text())
                     if i == 4:
-                        seuil1 = float(self.dockwidget.D5_T1.text())
-                        seuil2 = float(self.dockwidget.D5_T2.text())
+                        if self.dockwidget.D5_T1.isEnabled():
+                            seuil1 = float(self.dockwidget.D5_T1.text())
+                        if self.dockwidget.D5_T2.isEnabled():
+                            seuil2 = float(self.dockwidget.D5_T2.text())
                         
                         
                     # print (i)
@@ -530,13 +626,13 @@ class VisuValideMultiCriteriaMatching:
     def vide(self, table):
 
         self.dockwidget.tableCoordFeu.setRowCount(0)
-        self.dockwidget.tableCoordFeu.setColumnCount(len(self.NOM_DISTANCES) + 1)
+        self.dockwidget.tableCoordFeu.setColumnCount(len(self.DISTANCE_NOM) + 1)
         
         colHearder = []
         colHearder.append('id')
         
-        for i in range (len(self.NOM_DISTANCES)):
-            nom = self.NOM_DISTANCES[i]
+        for i in range (len(self.DISTANCE_NOM)):
+            nom = self.DISTANCE_NOM[i]
             nom = nom.replace('Distance', 'D').replace('distance','D')
             colHearder.append(nom)
             
@@ -554,4 +650,46 @@ class VisuValideMultiCriteriaMatching:
         # 
         table.setHorizontalHeaderLabels(colHearder)
         
+    
+    def visuDistance(self):
+        # print (self.DISTANCE_NOM[0])
+        
+        nomAttr = ''
+        if self.dockwidget.rbID.isChecked():
+            nomAttr = 'position'
+        
+        for i in range (len(self.DISTANCE_NOM)):
+            
+            if i == 0:
+                if self.dockwidget.rbD1.isChecked():
+                    nomAttr = self.DISTANCE_NOM[i]
+                    
+            if i == 1:
+                if self.dockwidget.rbD2.isChecked():
+                    nomAttr = self.DISTANCE_NOM[i]
+                    
+            if i == 2:
+                if self.dockwidget.rbD3.isChecked():
+                    nomAttr = self.DISTANCE_NOM[i]
+                    
+            if i == 3:
+                if self.dockwidget.rbD4.isChecked():
+                    nomAttr = self.DISTANCE_NOM[i]
+                    
+            if i == 4:
+                if self.dockwidget.rbD5.isChecked():
+                    nomAttr = self.DISTANCE_NOM[i]
+                    
+        # print (nomAttr)
+            
+        
+        if self.TYPE_GEOM == 'Point' or self.TYPE_GEOM == 'MultiPoint':
+            self.layerCOMP = style.getCompPointStyle(self.layerCOMP)
+        if self.TYPE_GEOM == 'Polygon' or self.TYPE_GEOM == 'MultiPolygon':
+            self.layerCOMP = style.getCompPolygoneStyle(self.layerCOMP, nomAttr)
+                
+        #self.iface.mapCanvas().refresh()
+        
+        self.layerCOMP.triggerRepaint()
+        self.iface.layerTreeView().refreshLayerSymbology(self.layerCOMP.id())
         
