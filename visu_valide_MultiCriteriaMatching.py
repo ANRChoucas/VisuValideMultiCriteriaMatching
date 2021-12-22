@@ -219,12 +219,14 @@ class VisuValideMultiCriteriaMatching:
         
         # On ouvre le fichier pour le type de la géométrie et les distances
         self.DISTANCE_NOM = []
+        self.ATTRS_NOM = []
         self.CRITERE_SEUIL = []
         self.TYPE_GEOM = ''
         self.seuilIndecision = -1
         
-        (DISTANCE_NOM, TYPE_GEOM, CRITERE_SEUIL, seuilIndecision) = util.entete(self.uriGrille)
+        (DISTANCE_NOM, ATTRS_NOM, TYPE_GEOM, CRITERE_SEUIL, seuilIndecision) = util.entete(self.uriGrille)
         self.DISTANCE_NOM = DISTANCE_NOM
+        self.ATTRS_NOM = ATTRS_NOM
         self.TYPE_GEOM = TYPE_GEOM
         self.CRITERE_SEUIL = CRITERE_SEUIL
         self.seuilIndecision = seuilIndecision
@@ -348,7 +350,7 @@ class VisuValideMultiCriteriaMatching:
                 self.dockwidget.rbD5.setEnabled(True)
         
         
-        
+       
 
     def createLayerRef(self):
         # ======================================================================================
@@ -357,7 +359,6 @@ class VisuValideMultiCriteriaMatching:
         
         if self.TYPE_GEOM == 'Polygon' or self.TYPE_GEOM == 'MultiPolygon':
             self.layerREF = style.getRefPolygoneStyle(self.layerREF)
-            
             
         if self.TYPE_GEOM == 'Point' or self.TYPE_GEOM == 'MultiPoint':
             self.layerREF = style.getRefPointStyle(self.layerREF)
@@ -376,6 +377,9 @@ class VisuValideMultiCriteriaMatching:
         # Eventuellement si vous voulez ajouter des attributs
         pr = self.layerCOMP.dataProvider()
         pr.addAttributes([QgsField("position", QVariant.String)])
+        
+        for i in range (len(self.ATTRS_NOM)):
+            pr.addAttributes([QgsField(self.ATTRS_NOM[i], QVariant.String)])
         
         for i in range (len(self.DISTANCE_NOM)):
             if i == 0:
@@ -406,7 +410,7 @@ class VisuValideMultiCriteriaMatching:
         
         self.removeFeatures()
         
-        candList = util.getCandidat(self.uriGrille, currId, self.DISTANCE_NOM)
+        candList = util.getCandidat(self.uriGrille, currId, self.DISTANCE_NOM, self.ATTRS_NOM)
         
         # print (len(candList))
         if len(candList) > 0:
@@ -438,13 +442,18 @@ class VisuValideMultiCriteriaMatching:
                     
                     attrs = []
                     attrs.append(str(candidat['id']))
+                    
+                    for j in range(len(self.ATTRS_NOM)):
+                        nom = self.ATTRS_NOM[j]
+                        attrs.append(candidat[nom])
+                        
                     for i in range (len(self.DISTANCE_NOM)):
                         nom = self.DISTANCE_NOM[i]
                         s = float(candidat[nom])
                         #print (s)
                         attrs.append(s)
+
                     poly.setAttributes(attrs)
-                    
                     pr.addFeatures([poly]) 
                 
             # Sauvegarde les changements
@@ -482,7 +491,7 @@ class VisuValideMultiCriteriaMatching:
         
         self.dockwidget.currentId.setText(str(id))
         self.afficheContexte(id)
-                
+               
               
     def removeFeatures(self):
         self.layerREF.startEditing()
@@ -505,9 +514,9 @@ class VisuValideMultiCriteriaMatching:
     
     
     def initTable(self, candList):
-#
+
         self.vide(self.dockwidget.tableCoordFeu)
-#        
+        
         if (len(candList)) == 0:
             self.dockwidget.tableCoordFeu.setRowCount(0)
             self.dockwidget.tableCoordFeu.setColumnCount(0)
@@ -534,12 +543,17 @@ class VisuValideMultiCriteriaMatching:
                 item1 = QTableWidgetItem(str(candidat['id']))
                 self.dockwidget.tableCoordFeu.setItem(n, 0, item1)
                 
+                for i in range(len(self.ATTRS_NOM)):
+                    nom = self.ATTRS_NOM[i]
+                    itemDistance = QTableWidgetItem(str(candidat[nom]))    
+                    self.dockwidget.tableCoordFeu.setItem(n, 1 + i, itemDistance)
+                
                 
                 for i in range (len(self.DISTANCE_NOM)):
                     
                     nom = self.DISTANCE_NOM[i]
                     itemDistance = QTableWidgetItem(str(candidat[nom]))    
-                    self.dockwidget.tableCoordFeu.setItem(n, 1 + i, itemDistance)
+                    self.dockwidget.tableCoordFeu.setItem(n, 1 + len(self.ATTRS_NOM) + i, itemDistance)
                     
                     s = float(candidat[nom])
                     
@@ -572,9 +586,9 @@ class VisuValideMultiCriteriaMatching:
                         
                     # print (i)
                     if s < seuil1 and i < 2:
-                        self.dockwidget.tableCoordFeu.item(n, 1 + i).setBackground(vert);
+                        self.dockwidget.tableCoordFeu.item(n, 1 + i + len(self.ATTRS_NOM)).setBackground(vert);
                     elif s < seuil2 and i < 2:
-                        self.dockwidget.tableCoordFeu.item(n, 1 + i).setBackground(orange);
+                        self.dockwidget.tableCoordFeu.item(n, 1 + i + len(self.ATTRS_NOM)).setBackground(orange);
                     
                 isNA = False
                 if candidat['nom'] == 'NA':
@@ -626,10 +640,14 @@ class VisuValideMultiCriteriaMatching:
     def vide(self, table):
 
         self.dockwidget.tableCoordFeu.setRowCount(0)
-        self.dockwidget.tableCoordFeu.setColumnCount(len(self.DISTANCE_NOM) + 1)
+        self.dockwidget.tableCoordFeu.setColumnCount(len(self.ATTRS_NOM) + len(self.DISTANCE_NOM) + 1)
         
         colHearder = []
         colHearder.append('id')
+        
+        for i in range (len(self.ATTRS_NOM)):
+            nom = self.ATTRS_NOM[i]
+            colHearder.append(nom)
         
         for i in range (len(self.DISTANCE_NOM)):
             nom = self.DISTANCE_NOM[i]
@@ -650,46 +668,47 @@ class VisuValideMultiCriteriaMatching:
         # 
         table.setHorizontalHeaderLabels(colHearder)
         
+        
     
     def visuDistance(self):
         # print (self.DISTANCE_NOM[0])
         
         nomAttr = ''
-        if self.dockwidget.rbID.isChecked():
-            nomAttr = 'position'
-        
-        for i in range (len(self.DISTANCE_NOM)):
-            
-            if i == 0:
-                if self.dockwidget.rbD1.isChecked():
-                    nomAttr = self.DISTANCE_NOM[i]
-                    
-            if i == 1:
-                if self.dockwidget.rbD2.isChecked():
-                    nomAttr = self.DISTANCE_NOM[i]
-                    
-            if i == 2:
-                if self.dockwidget.rbD3.isChecked():
-                    nomAttr = self.DISTANCE_NOM[i]
-                    
-            if i == 3:
-                if self.dockwidget.rbD4.isChecked():
-                    nomAttr = self.DISTANCE_NOM[i]
-                    
-            if i == 4:
-                if self.dockwidget.rbD5.isChecked():
-                    nomAttr = self.DISTANCE_NOM[i]
-                    
-        # print (nomAttr)
-            
-        
-        if self.TYPE_GEOM == 'Point' or self.TYPE_GEOM == 'MultiPoint':
-            self.layerCOMP = style.getCompPointStyle(self.layerCOMP)
-        if self.TYPE_GEOM == 'Polygon' or self.TYPE_GEOM == 'MultiPolygon':
-            self.layerCOMP = style.getCompPolygoneStyle(self.layerCOMP, nomAttr)
-                
-        #self.iface.mapCanvas().refresh()
-        
-        self.layerCOMP.triggerRepaint()
-        self.iface.layerTreeView().refreshLayerSymbology(self.layerCOMP.id())
-        
+#        if self.dockwidget.rbID.isChecked():
+#            nomAttr = 'position'
+#        
+#        for i in range (len(self.DISTANCE_NOM)):
+#            
+#            if i == 0:
+#                if self.dockwidget.rbD1.isChecked():
+#                    nomAttr = self.DISTANCE_NOM[i]
+#                    
+#            if i == 1:
+#                if self.dockwidget.rbD2.isChecked():
+#                    nomAttr = self.DISTANCE_NOM[i]
+#                    
+#            if i == 2:
+#                if self.dockwidget.rbD3.isChecked():
+#                    nomAttr = self.DISTANCE_NOM[i]
+#                    
+#            if i == 3:
+#                if self.dockwidget.rbD4.isChecked():
+#                    nomAttr = self.DISTANCE_NOM[i]
+#                    
+#            if i == 4:
+#                if self.dockwidget.rbD5.isChecked():
+#                    nomAttr = self.DISTANCE_NOM[i]
+#                    
+#        # print (nomAttr)
+#            
+#        
+#        if self.TYPE_GEOM == 'Point' or self.TYPE_GEOM == 'MultiPoint':
+#            self.layerCOMP = style.getCompPointStyle(self.layerCOMP)
+#        if self.TYPE_GEOM == 'Polygon' or self.TYPE_GEOM == 'MultiPolygon':
+#            self.layerCOMP = style.getCompPolygoneStyle(self.layerCOMP, nomAttr)
+#                
+#        #self.iface.mapCanvas().refresh()
+#        
+#        self.layerCOMP.triggerRepaint()
+#        self.iface.layerTreeView().refreshLayerSymbology(self.layerCOMP.id())
+#        

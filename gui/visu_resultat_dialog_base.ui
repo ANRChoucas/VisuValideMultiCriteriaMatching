@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>397</width>
-    <height>640</height>
+    <width>461</width>
+    <height>652</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -23,9 +23,9 @@
    <widget class="QPushButton" name="btFermer">
     <property name="geometry">
      <rect>
-      <x>340</x>
-      <y>390</y>
-      <width>41</width>
+      <x>400</x>
+      <y>530</y>
+      <width>51</width>
       <height>30</height>
      </rect>
     </property>
@@ -33,7 +33,7 @@
      <string>Fermer le plugin</string>
     </property>
     <property name="text">
-     <string>XX</string>
+     <string>Close</string>
     </property>
     <property name="icon">
      <iconset>
@@ -51,7 +51,7 @@
      <rect>
       <x>10</x>
       <y>60</y>
-      <width>361</width>
+      <width>371</width>
       <height>71</height>
      </rect>
     </property>
@@ -111,8 +111,8 @@
    <widget class="QPushButton" name="btZoomGrille">
     <property name="geometry">
      <rect>
-      <x>340</x>
-      <y>350</y>
+      <x>400</x>
+      <y>490</y>
       <width>51</width>
       <height>30</height>
      </rect>
@@ -126,7 +126,7 @@
      <rect>
       <x>10</x>
       <y>140</y>
-      <width>351</width>
+      <width>451</width>
       <height>161</height>
      </rect>
     </property>
@@ -134,25 +134,26 @@
      <number>5</number>
     </property>
     <property name="columnCount">
-     <number>3</number>
+     <number>4</number>
     </property>
-    <attribute name="horizontalHeaderDefaultSectionSize">
-     <number>108</number>
-    </attribute>
     <attribute name="horizontalHeaderMinimumSectionSize">
      <number>30</number>
     </attribute>
-    <attribute name="verticalHeaderDefaultSectionSize">
-     <number>30</number>
+    <attribute name="horizontalHeaderDefaultSectionSize">
+     <number>108</number>
     </attribute>
     <attribute name="verticalHeaderMinimumSectionSize">
      <number>15</number>
     </attribute>
+    <attribute name="verticalHeaderDefaultSectionSize">
+     <number>30</number>
+    </attribute>
     <row/>
     <row/>
     <row/>
     <row/>
     <row/>
+    <column/>
     <column/>
     <column/>
     <column/>
@@ -184,7 +185,7 @@
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>330</y>
+      <y>350</y>
       <width>111</width>
       <height>20</height>
      </rect>
@@ -197,7 +198,7 @@
     <property name="geometry">
      <rect>
       <x>140</x>
-      <y>330</y>
+      <y>350</y>
       <width>70</width>
       <height>20</height>
      </rect>
@@ -210,7 +211,7 @@
     <property name="geometry">
      <rect>
       <x>210</x>
-      <y>330</y>
+      <y>350</y>
       <width>70</width>
       <height>20</height>
      </rect>
@@ -223,7 +224,7 @@
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>350</y>
+      <y>370</y>
       <width>111</width>
       <height>20</height>
      </rect>
@@ -239,7 +240,7 @@
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>370</y>
+      <y>390</y>
       <width>111</width>
       <height>20</height>
      </rect>
@@ -255,7 +256,7 @@
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>390</y>
+      <y>410</y>
       <width>111</width>
       <height>20</height>
      </rect>
@@ -268,7 +269,7 @@
     <property name="geometry">
      <rect>
       <x>140</x>
-      <y>350</y>
+      <y>370</y>
       <width>70</width>
       <height>20</height>
      </rect>
@@ -284,7 +285,7 @@
     <property name="geometry">
      <rect>
       <x>140</x>
-      <y>370</y>
+      <y>390</y>
       <width>70</width>
       <height>20</height>
      </rect>
@@ -300,7 +301,7 @@
     <property name="geometry">
      <rect>
       <x>140</x>
-      <y>390</y>
+      <y>410</y>
       <width>70</width>
       <height>20</height>
      </rect>
@@ -313,7 +314,7 @@
     <property name="geometry">
      <rect>
       <x>210</x>
-      <y>350</y>
+      <y>370</y>
       <width>70</width>
       <height>20</height>
      </rect>
@@ -329,7 +330,7 @@
     <property name="geometry">
      <rect>
       <x>210</x>
-      <y>370</y>
+      <y>390</y>
       <width>70</width>
       <height>20</height>
      </rect>
@@ -345,7 +346,7 @@
     <property name="geometry">
      <rect>
       <x>210</x>
-      <y>390</y>
+      <y>410</y>
       <width>70</width>
       <height>20</height>
      </rect>
@@ -358,7 +359,7 @@
     <property name="geometry">
      <rect>
       <x>170</x>
-      <y>310</y>
+      <y>330</y>
       <width>21</width>
       <height>20</height>
      </rect>
@@ -371,7 +372,7 @@
     <property name="geometry">
      <rect>
       <x>240</x>
-      <y>310</y>
+      <y>330</y>
       <width>21</width>
       <height>20</height>
      </rect>
@@ -387,7 +388,7 @@
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>410</y>
+      <y>430</y>
       <width>111</width>
       <height>20</height>
      </rect>
@@ -403,7 +404,7 @@
     <property name="geometry">
      <rect>
       <x>140</x>
-      <y>410</y>
+      <y>430</y>
       <width>70</width>
       <height>20</height>
      </rect>
@@ -419,7 +420,7 @@
     <property name="geometry">
      <rect>
       <x>210</x>
-      <y>410</y>
+      <y>430</y>
       <width>70</width>
       <height>20</height>
      </rect>
@@ -432,7 +433,7 @@
     <property name="geometry">
      <rect>
       <x>30</x>
-      <y>450</y>
+      <y>490</y>
       <width>341</width>
       <height>131</height>
      </rect>
@@ -501,7 +502,7 @@
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>440</y>
+      <y>460</y>
       <width>111</width>
       <height>17</height>
      </rect>
@@ -514,7 +515,7 @@
     <property name="geometry">
      <rect>
       <x>140</x>
-      <y>440</y>
+      <y>460</y>
       <width>141</width>
       <height>21</height>
      </rect>
@@ -524,7 +525,7 @@
     <property name="geometry">
      <rect>
       <x>300</x>
-      <y>300</y>
+      <y>320</y>
       <width>112</width>
       <height>23</height>
      </rect>
@@ -540,7 +541,7 @@
     <property name="geometry">
      <rect>
       <x>300</x>
-      <y>330</y>
+      <y>350</y>
       <width>112</width>
       <height>23</height>
      </rect>
@@ -553,19 +554,6 @@
     <property name="geometry">
      <rect>
       <x>300</x>
-      <y>350</y>
-      <width>112</width>
-      <height>23</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string/>
-    </property>
-   </widget>
-   <widget class="QRadioButton" name="rbD3">
-    <property name="geometry">
-     <rect>
-      <x>300</x>
       <y>370</y>
       <width>112</width>
       <height>23</height>
@@ -575,7 +563,10 @@
      <string/>
     </property>
    </widget>
-   <widget class="QRadioButton" name="rbD4">
+   <widget class="QRadioButton" name="rbD3">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
     <property name="geometry">
      <rect>
       <x>300</x>
@@ -588,11 +579,30 @@
      <string/>
     </property>
    </widget>
-   <widget class="QRadioButton" name="rbD5">
+   <widget class="QRadioButton" name="rbD4">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
     <property name="geometry">
      <rect>
       <x>300</x>
       <y>410</y>
+      <width>112</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QRadioButton" name="rbD5">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>300</x>
+      <y>430</y>
       <width>112</width>
       <height>23</height>
      </rect>
