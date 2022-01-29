@@ -30,11 +30,10 @@ from PyQt5.QtWidgets import QTableWidgetItem
 from qgis.PyQt.QtGui import QIcon
 from qgis.PyQt.QtWidgets import QAction
 
-from qgis.core import QgsProject, QgsVectorLayer
+from qgis.core import QgsProject, QgsVectorLayer, QgsVectorFileWriter
+from qgis.core import QgsCoordinateReferenceSystem
 from qgis.core import QgsGeometry, QgsFeature
 from qgis.core import QgsField
-
-
 
 # Initialize Qt resources from file resources.py
 from .resources import resources
@@ -144,6 +143,28 @@ class VisuValideMultiCriteriaMatching:
 
         # On recharge pour repartir       
         #self.reload()
+        
+        # On vide les champs de la fenêtre graphique
+        self.dockwidget.fileResultat.setFilePath(None)
+        self.dockwidget.fieldNbValidation.setText('0')
+        self.dockwidget.fieldNbValidationProbleme.setText('0')
+        self.vide(self.dockwidget.tableCoordFeu)
+        self.dockwidget.D1_T1.setText("0")
+        self.dockwidget.D1_T2.setText("0")
+        self.dockwidget.D2_T1.setText("0")
+        self.dockwidget.D3_T1.setText("0")
+        self.dockwidget.seuilP.setText("0")
+        self.dockwidget.pign1.setText("0")
+        self.dockwidget.pign2.setText("0")
+        self.dockwidget.labelResultat.setText('')
+        self.dockwidget.labelResultat.setStyleSheet('color:black;font: 8pt MS Shell Dlg 2;background-color:white')
+        self.dockwidget.fieldREFNom.setText("")
+        self.dockwidget.fieldREFUri.setText("")
+        self.dockwidget.fieldNbValidation.setText('0')
+        self.dockwidget.fieldNbValidationProbleme.setText('0')
+        self.dockwidget.fieldNbErreur.setText("0")
+        self.dockwidget.fieldNbTODO.setText("0")
+        self.dockwidget.rbTODO.setChecked(True)
 
         # On supprime les layers de la fenêtre        
         self.vider()
@@ -158,11 +179,16 @@ class VisuValideMultiCriteriaMatching:
         # supprime les layers
         if self.layerCOMP != None:
             QgsProject.instance().removeMapLayers( [self.layerCOMP.id()] )
+            self.layerCOMP = None
             
         if self.layerREF != None:
             QgsProject.instance().removeMapLayers( [self.layerREF.id()] )
+            self.layerREF = None
 
-
+        if self.layerLINK != None:
+            QgsProject.instance().removeMapLayers( [self.layerLINK.id()] )
+            self.layerLINK = None
+            
     
     def initWidget(self):
         """Run method that performs all the real work"""
@@ -177,6 +203,7 @@ class VisuValideMultiCriteriaMatching:
                 
                 self.layerCOMP = None
                 self.layerREF = None
+                self.layerLINK = None
                 
                 self.dockwidget.btPrec.setStyleSheet('color : black;font: 8pt MS Shell Dlg 2')
                 self.dockwidget.btSuiv.setStyleSheet('color : black;font: 8pt MS Shell Dlg 2')
@@ -185,7 +212,7 @@ class VisuValideMultiCriteriaMatching:
                 
                 self.dockwidget.btSuiv.clicked.connect(self.doSuivant)
                 self.dockwidget.btPrec.clicked.connect(self.doPrecedent)
-                self.dockwidget.currentId.setDisabled(True)
+                #self.dockwidget.currentId.setDisabled(True)
                 self.dockwidget.currentId.setText("-1")
                 
                 self.dockwidget.btFermer.clicked.connect(self.onClosePlugin)
@@ -193,13 +220,24 @@ class VisuValideMultiCriteriaMatching:
                 
                 self.dockwidget.fileResultat.fileChanged.connect(self.importFichier)
                 
-                self.dockwidget.rbID.toggled.connect(self.visuDistance)
-                self.dockwidget.rbD1.toggled.connect(self.visuDistance)
-                self.dockwidget.rbD2.toggled.connect(self.visuDistance)
-                self.dockwidget.rbD3.toggled.connect(self.visuDistance)
-                self.dockwidget.rbD4.toggled.connect(self.visuDistance)
-                self.dockwidget.rbD5.toggled.connect(self.visuDistance)
+                self.dockwidget.rbVALIDE.clicked.connect(self.valide)
+                self.dockwidget.rbERREUR.clicked.connect(self.erreur)
+                self.dockwidget.rbINDECIS.clicked.connect(self.indecis)
+                self.dockwidget.rbTODO.clicked.connect(self.todo)
                 
+                self.dockwidget.btID.clicked.connect(self.affid)
+                self.dockwidget.btNom.clicked.connect(self.affnom)
+                
+                self.dockwidget.rbTODO.setEnabled(True)
+                self.dockwidget.rbVALIDE.setEnabled(False)
+                self.dockwidget.rbERREUR.setEnabled(False)
+                self.dockwidget.rbINDECIS.setEnabled(False)
+                
+                self.dockwidget.btSauvegarderFermer.clicked.connect(self.saveclose)
+                self.dockwidget.btSauvegarderFermer.setEnabled(False)
+                
+                self.dockwidget.fieldREFNom.setText("")
+                self.dockwidget.fieldREFUri.setText("")
 
         self.iface.mapCanvas().refresh()
                 
@@ -208,232 +246,306 @@ class VisuValideMultiCriteriaMatching:
         self.dockwidget.show()
         
     
-    def importFichier(self):
+    def saveclose(self):
         
-        # On supprime les layers car on va les recreer
-        self.vider()
+        if self.featLINK != None:
+            print (self.uriFileLink)
+            self.layerLINK.setSubsetString("")
+            # Save memory layer to file
+            crs = QgsCoordinateReferenceSystem("epsg:2154")
+            error = QgsVectorFileWriter.writeAsVectorFormat(self.layerLINK, self.uriFileLink, "UTF-8", crs , "ESRI Shapefile")
+        
+            # On empeche l'enregistrement
+            self.dockwidget.btSauvegarderFermer.setEnabled(False)
+
+            if error == QgsVectorFileWriter.NoError:
+                print ("success! writing new memory layer")
+
+        # On ferme
+        self.onClosePlugin()
+        
+    # 1
+    # self.NB_VALIDE
+    # 2    
+    # self.NB_PROBLEME
+    # 0
+    # self.NB_ERREUR
+    # -1
+    # self.NB_TODO
+    # self.majNombreValidation()
+    
+    def updateNB(self, oldval, newval):
+        if oldval == 1:
+            self.NB_VALIDE -= 1
+        if oldval == 2:
+            self.NB_PROBLEME -= 1
+        if oldval == 0:
+            self.NB_ERREUR -= 1
+        if oldval == -1:
+            self.NB_TODO -= 1
+            
+        if newval == 1:
+            self.NB_VALIDE += 1
+        if newval == 2:
+            self.NB_PROBLEME += 1
+        if newval == 0:
+            self.NB_ERREUR += 1
+        if newval == -1:
+            self.NB_TODO += 1
+        
+    def valide(self):
+        if self.featLINK != None:
+            # On récupère le code
+            validation = self.featLINK.attributes()[2]
+            self.updateNB(validation, 1)
+            self.majNombreValidation()
+            
+            self.layerLINK.setSubsetString("")
+            self.layerLINK.startEditing()
+            self.prlink = self.layerLINK.dataProvider()
+            self.layerLINK.changeAttributeValue(self.featLINK.id(), 2, 1)
+            self.layerLINK.commitChanges()
+            self.layerLINK.setSubsetString(" ID_REF = '" + str(self.idFeatLINK) + "'")
+            for feat in self.layerLINK.getFeatures():
+                self.featLINK = feat
+
+    def erreur(self):
+        if self.featLINK != None:
+            # On récupère le code
+            validation = self.featLINK.attributes()[2]
+            self.updateNB(validation, 0)
+            self.majNombreValidation()
+            
+            self.layerLINK.setSubsetString("")
+            self.layerLINK.startEditing()
+            self.prlink = self.layerLINK.dataProvider()
+            self.layerLINK.changeAttributeValue(self.featLINK.id(), 2, 0)
+            self.layerLINK.commitChanges()
+            self.layerLINK.setSubsetString(" ID_REF = '" + str(self.idFeatLINK) + "'")
+            for feat in self.layerLINK.getFeatures():
+                self.featLINK = feat
+            
+    def indecis(self):
+        if self.featLINK != None:
+            # On récupère le code
+            validation = self.featLINK.attributes()[2]
+            self.updateNB(validation, 2)
+            self.majNombreValidation()
+            
+            self.layerLINK.setSubsetString("")
+            self.layerLINK.startEditing()
+            self.prlink = self.layerLINK.dataProvider()
+            self.layerLINK.changeAttributeValue(self.featLINK.id(), 2, 2)
+            self.layerLINK.commitChanges()
+            self.layerLINK.setSubsetString(" ID_REF = '" + str(self.idFeatLINK) + "'")
+            for feat in self.layerLINK.getFeatures():
+                self.featLINK = feat
+            
+    def todo(self):
+        if self.featLINK != None:
+            # On récupère le code
+            validation = self.featLINK.attributes()[2]
+            self.updateNB(validation, -1)
+            self.majNombreValidation()
+            
+            self.layerLINK.setSubsetString("")
+            self.layerLINK.startEditing()
+            self.prlink = self.layerLINK.dataProvider()
+            self.layerLINK.changeAttributeValue(self.featLINK.id(), 2, -1)
+            self.layerLINK.commitChanges()
+            self.layerLINK.setSubsetString(" ID_REF = '" + str(self.idFeatLINK) + "'")
+            for feat in self.layerLINK.getFeatures():
+                self.featLINK = feat
+        
+    
+    def affid(self):
+        self.layerCOMP = style.getCompPointStyle(self.layerCOMP, 'id')
+    def affnom(self):
+        self.layerCOMP = style.getCompPointStyle(self.layerCOMP, 'nom')
+    
+        
+    
+    def importFichier(self):
         
         # On charge le chemin du fichier de résultat
         self.uriGrille = self.dockwidget.fileResultat.filePath().strip()
-        # print (self.uriGrille)
+        # print ('uri', self.uriGrille)
         
-        # On ouvre le fichier pour le type de la géométrie et les distances
-        self.DISTANCE_NOM = []
-        self.ATTRS_NOM = []
-        self.CRITERE_SEUIL = []
-        self.TYPE_GEOM = ''
-        self.seuilIndecision = -1
-        
-        (DISTANCE_NOM, ATTRS_NOM, TYPE_GEOM, CRITERE_SEUIL, seuilIndecision) = util.entete(self.uriGrille)
-        self.DISTANCE_NOM = DISTANCE_NOM
-        self.ATTRS_NOM = ATTRS_NOM
-        self.TYPE_GEOM = TYPE_GEOM
-        self.CRITERE_SEUIL = CRITERE_SEUIL
-        self.seuilIndecision = seuilIndecision
-        
-        
-        self.dockwidget.seuilP.setText(str(self.seuilIndecision))
-        # self.dockwidget.seuilP.setEnabled(False)
-        
-        #self.dockwidget.pign1.setEnabled(False)
-        #self.dockwidget.pign2.setEnabled(False)
-        
-        self.dockwidget.currentId.setText("-1")
-        
-        self.createLayerComp()
-        self.createLayerRef()
-        
-        self.dockwidget.labelSeuil1.setEnabled(False)
-        self.dockwidget.D1_T1.setEnabled(False)
-        self.dockwidget.D1_T2.setEnabled(False)
-        
-        self.dockwidget.labelSeuil2.setEnabled(False)
-        self.dockwidget.D2_T1.setEnabled(False)
-        self.dockwidget.D2_T2.setEnabled(False)
-        
-        self.dockwidget.labelSeuil3.setEnabled(False)
-        self.dockwidget.D3_T1.setEnabled(False)
-        self.dockwidget.D3_T2.setEnabled(False)
-        
-        self.dockwidget.labelSeuil4.setEnabled(False)
-        self.dockwidget.D4_T1.setEnabled(False)
-        self.dockwidget.D4_T2.setEnabled(False)
-        
-        self.dockwidget.labelSeuil5.setEnabled(False)
-        self.dockwidget.D5_T1.setEnabled(False)
-        self.dockwidget.D5_T2.setEnabled(False)
-        
-        # print (self.DISTANCE_NOM)
-        # print (self.CRITERE_SEUIL)
-        
-        self.dockwidget.rbD1.setEnabled(False)
-        self.dockwidget.rbD2.setEnabled(False)
-        self.dockwidget.rbD3.setEnabled(False)
-        self.dockwidget.rbD4.setEnabled(False)
-        self.dockwidget.rbD5.setEnabled(False)
-        
-        
-        for i in range (len(self.DISTANCE_NOM)):
-            if i == 0:
-                self.dockwidget.labelSeuil1.setEnabled(True)
-                self.dockwidget.D1_T1.setEnabled(True)
-                self.dockwidget.D1_T2.setEnabled(True)
-                
-                seuils = self.CRITERE_SEUIL[i]
-                if len(seuils) > 0:
-                    self.dockwidget.D1_T1.setText(seuils[0])
-                if len(seuils) > 1:
-                    self.dockwidget.D1_T2.setText(seuils[1])
-                else:
-                    self.dockwidget.D1_T2.setEnabled(False)
-                
-                self.dockwidget.rbD1.setEnabled(True)
+        if self.uriGrille != None and self.uriGrille.strip() != '':
+            # On supprime les layers car on va les recreer
+            self.vider()
             
-            if i == 1:
-                self.dockwidget.labelSeuil2.setEnabled(True)
-                self.dockwidget.D2_T1.setEnabled(True)
-                self.dockwidget.D2_T2.setEnabled(True)
-                
-                seuils = self.CRITERE_SEUIL[i]
-                if len(seuils) > 0:
-                    self.dockwidget.D2_T1.setText(seuils[0])
-                if len(seuils) > 1:
-                    self.dockwidget.D2_T2.setText(seuils[1])
-                else:
-                    self.dockwidget.D2_T2.setEnabled(False)
-                    
-                self.dockwidget.rbD2.setEnabled(True)
-                    
-            if i == 2:
-                self.dockwidget.labelSeuil3.setEnabled(True)
-                self.dockwidget.D3_T1.setEnabled(True)
-                self.dockwidget.D3_T2.setEnabled(True)
-                
-                seuils = self.CRITERE_SEUIL[i]
-                if len(seuils) > 0:
-                    self.dockwidget.D3_T1.setText(seuils[0])
-                if len(seuils) > 1:
-                    self.dockwidget.D3_T2.setText(seuils[1])
-                else:
-                    self.dockwidget.D3_T2.setEnabled(False)
-                    
-                self.dockwidget.rbD3.setEnabled(True)
-                    
-            if i == 3:
-                self.dockwidget.labelSeuil4.setEnabled(True)
-                self.dockwidget.D4_T1.setEnabled(True)
-                self.dockwidget.D4_T2.setEnabled(True)
-                
-                seuils = self.CRITERE_SEUIL[i]
-                if len(seuils) > 0:
-                    self.dockwidget.D4_T1.setText(seuils[0])
-                if len(seuils) > 1:
-                    self.dockwidget.D4_T2.setText(seuils[1])
-                else:
-                    self.dockwidget.D4_T2.setEnabled(False)
-                    
-                self.dockwidget.rbD4.setEnabled(True)
-                    
-            if i == 4:
-                self.dockwidget.labelSeuil5.setEnabled(True)
-                self.dockwidget.D5_T1.setEnabled(True)
-                self.dockwidget.D5_T2.setEnabled(True)
-                
-                seuils = self.CRITERE_SEUIL[i]
-                if len(seuils) > 0:
-                    self.dockwidget.D5_T1.setText(seuils[0])
-                if len(seuils) > 1:
-                    self.dockwidget.D5_T2.setText(seuils[1])
-                else:
-                    self.dockwidget.D5_T2.setEnabled(False)
-                    
-                self.dockwidget.rbD5.setEnabled(True)
+            # On ouvre le fichier pour le type de la géométrie et les distances
+            self.DISTANCE_NOM = []
+            self.CRITERE_SEUIL = []
+            self.TYPE_GEOM = ''
+            self.seuilIndecision = -1
+            
+            (DISTANCE_NOM, TYPE_GEOM, CRITERE_SEUIL, seuilIndecision) = util.entete(self.uriGrille)
+            self.DISTANCE_NOM = DISTANCE_NOM
+            self.TYPE_GEOM = TYPE_GEOM
+            self.CRITERE_SEUIL = CRITERE_SEUIL
+            self.seuilIndecision = seuilIndecision
+            
+            self.dockwidget.seuilP.setText(str(self.seuilIndecision))
+            
+            self.dockwidget.seuilP.setEnabled(False)
+            self.dockwidget.pign1.setEnabled(False)
+            self.dockwidget.pign2.setEnabled(False)
+            
+            self.dockwidget.currentId.setText("-1")
+            
+            self.createLayerComp()
+            self.createLayerRef()
+            self.createLayerLink()
+            
+            self.dockwidget.labelSeuil1.setEnabled(False)
+            self.dockwidget.labelSeuil2.setEnabled(False)
+            self.dockwidget.labelSeuil3.setEnabled(False)
+            
+            self.dockwidget.D1_T1.setText(self.CRITERE_SEUIL[0][0])
+            self.dockwidget.D1_T2.setText(self.CRITERE_SEUIL[0][1])
+            self.dockwidget.D2_T1.setText(self.CRITERE_SEUIL[1][0])
+            self.dockwidget.D3_T1.setText(self.CRITERE_SEUIL[2][0])
+            
+            #self.dockwidget.fieldNbValidation.setEnabled(False)
+            #self.dockwidget.fieldNbValidationProbleme.setEnabled(False)
         
         
-       
+        
 
     def createLayerRef(self):
-        # ======================================================================================
-        # Layer IGN
-        self.layerREF = QgsVectorLayer (self.TYPE_GEOM + "?crs=epsg:2154", "REF", "memory")
+        # =====================================================================
+        #  Layer REF
+        self.layerREF = QgsVectorLayer ("Point?crs=epsg:2154", "REF", "memory")
+        self.layerREF.startEditing()
+        pr = self.layerREF.dataProvider()
+        pr.addAttributes([QgsField("uri", QVariant.String)])
+        pr.addAttributes([QgsField("nom", QVariant.String)])
+        self.layerREF.commitChanges()
         
-        if self.TYPE_GEOM == 'Polygon' or self.TYPE_GEOM == 'MultiPolygon':
-            self.layerREF = style.getRefPolygoneStyle(self.layerREF)
-            
-        if self.TYPE_GEOM == 'Point' or self.TYPE_GEOM == 'MultiPoint':
-            self.layerREF = style.getRefPointStyle(self.layerREF)
-            
+        self.layerREF = style.getRefPointStyle(self.layerREF)
         QgsProject.instance().addMapLayer(self.layerREF)
-            
-            
-        
+
 
     def createLayerComp(self):
-
-        # ======================================================================================
-        # Layer OSM
-        self.layerCOMP = QgsVectorLayer (self.TYPE_GEOM + "?crs=epsg:2154", "COMP", "memory")
-        
-        # Eventuellement si vous voulez ajouter des attributs
+        # =====================================================================
+        #  Layer COMP (candidat)
+        self.layerCOMP = QgsVectorLayer ("Point?crs=epsg:2154", "COMP", "memory")
+        self.layerCOMP.startEditing()
         pr = self.layerCOMP.dataProvider()
         pr.addAttributes([QgsField("position", QVariant.String)])
+        pr.addAttributes([QgsField("id", QVariant.String)])
+        pr.addAttributes([QgsField("uri", QVariant.String)])
+        pr.addAttributes([QgsField("nom", QVariant.String)])
         
-        for i in range (len(self.ATTRS_NOM)):
-            pr.addAttributes([QgsField(self.ATTRS_NOM[i], QVariant.String)])
-        
-        for i in range (len(self.DISTANCE_NOM)):
-            if i == 0:
-                pr.addAttributes([QgsField(self.DISTANCE_NOM[i], QVariant.Double)])
-            if i == 1:
-                pr.addAttributes([QgsField(self.DISTANCE_NOM[i], QVariant.Double)])
-            if i == 2:
-                pr.addAttributes([QgsField(self.DISTANCE_NOM[i], QVariant.Double)])
-            if i == 3:
-                pr.addAttributes([QgsField(self.DISTANCE_NOM[i], QVariant.Double)])
-            if i == 4:
-                pr.addAttributes([QgsField(self.DISTANCE_NOM[i], QVariant.Double)])
-        
+        pr.addAttributes([QgsField(self.DISTANCE_NOM[0], QVariant.Double)])
+        pr.addAttributes([QgsField(self.DISTANCE_NOM[1], QVariant.Double)])
+        pr.addAttributes([QgsField(self.DISTANCE_NOM[2], QVariant.Double)])
         self.layerCOMP.commitChanges()
         
-        if self.TYPE_GEOM == 'Polygon' or self.TYPE_GEOM == 'MultiPolygon':
-            self.layerCOMP = style.getCompPolygoneStyle(self.layerCOMP, 'position')
-            
-        if self.TYPE_GEOM == 'Point' or self.TYPE_GEOM == 'MultiPoint':
-            self.layerCOMP = style.getCompPointStyle(self.layerCOMP)
-                
+        self.layerCOMP = style.getCompPointStyle(self.layerCOMP)
         QgsProject.instance().addMapLayer(self.layerCOMP)
         
         
+    def createLayerLink(self):
+        # =====================================================================
+        # Layer liens d'appariement
+        self.uriFileLink = self.uriGrille.split(".")[0] + "-APP.shp"
+        if not os.path.isfile(self.uriFileLink):
+            
+            # Il faut activer la sauvegarde
+            self.dockwidget.btSauvegarderFermer.setEnabled(True)
+            
+            # il faut le créer en memory pour commencer
+            self.layerLINK = QgsVectorLayer ("LineString?crs=EPSG:2154", "Liens appariement", "memory")
+            pr = self.layerLINK.dataProvider()
+            pr.addAttributes([QgsField("ID_REF", QVariant.String),
+                  QgsField("ID_COMP",  QVariant.String),
+                  QgsField("VALIDATION", QVariant.Int)])
+            self.layerLINK.updateFields() 
+
+            LINKS = util.lienappariement(self.uriGrille, self.DISTANCE_NOM)
+            for link in LINKS:
+                # f.write(link[0] + ";" + link[1] + ";-1;" + ligne.asWkt() + "\n")
+                p1 = QgsGeometry.fromWkt(link[2]).asPoint()
+                p2 = QgsGeometry.fromWkt(link[3]).asPoint()
+                ligne = QgsGeometry.fromPolylineXY([p1,p2])
+                
+                f = QgsFeature()
+                f.setGeometry(ligne)
+                f.setAttributes([link[0], link[1], -1.0])
+                pr.addFeature(f)
+            
+            self.layerLINK.updateExtents() 
+            self.dockwidget.fieldNbValidation.setText('0')
+            self.dockwidget.fieldNbValidationProbleme.setText('0')
+            self.dockwidget.fieldNbErreur.setText("0")
+            self.dockwidget.fieldNbTODO.setText("0")
+            
+        else:
+            # On charge le fichier CSV
+            self.layerLINK = QgsVectorLayer (self.uriFileLink, "Liens appariement", "ogr")
         
+        
+        self.layerLINK.setSubsetString(" VALIDATION = 1 ")
+        self.NB_VALIDE = self.layerLINK.featureCount()
+        
+        self.layerLINK.setSubsetString(" VALIDATION = 2")
+        self.NB_PROBLEME = self.layerLINK.featureCount()
+        
+        self.layerLINK.setSubsetString(" VALIDATION = 0")
+        self.NB_ERREUR = self.layerLINK.featureCount()
+        
+        self.layerLINK.setSubsetString(" VALIDATION = -1")
+        self.NB_TODO = self.layerLINK.featureCount()
+        
+        self.majNombreValidation()
+        
+        self.layerLINK.setSubsetString("1 = 0")
+        QgsProject.instance().addMapLayer(self.layerLINK)
+        
+        single_symbol_renderer = self.layerLINK.renderer()
+        symbol = single_symbol_renderer.symbol()
+        symbol.setColor(QColor.fromRgb(31, 120, 180))
+        symbol.setWidth(0.6)
+
+
+    def majNombreValidation(self):
+        # =====================================================================
+        self.dockwidget.fieldNbValidation.setText(str(self.NB_VALIDE))
+        self.dockwidget.fieldNbValidationProbleme.setText(str(self.NB_PROBLEME))
+        self.dockwidget.fieldNbErreur.setText(str(self.NB_ERREUR))
+        self.dockwidget.fieldNbTODO.setText(str(self.NB_TODO))
+    
     
     def afficheContexte(self, currId):
-        
+        # =====================================================================
         self.removeFeatures()
         
-        candList = util.getCandidat(self.uriGrille, currId, self.DISTANCE_NOM, self.ATTRS_NOM)
+        d = util.getRefInfo(self.uriGrille, currId)
+        if d!= None:
+            self.dockwidget.fieldREFNom.setText(d[0])
+            self.dockwidget.fieldREFUri.setText(d[1].replace('http://purl.org/choucas.ign.fr/oor#', ''))
         
-        # print (len(candList))
+        candList = util.getCandidat(self.uriGrille, currId, self.DISTANCE_NOM)
         if len(candList) > 0:
-                
             candidat = candList[1]
             
-            # ======================================================================================
+            # =================================================================
             # Layer REF
             pr = self.layerREF.dataProvider()
             self.layerREF.startEditing()
-                
             poly = QgsFeature()
             poly.setGeometry(QgsGeometry.fromWkt(candidat['geomref']))
+            poly.setAttributes([candidat['uriref'].replace('http://purl.org/choucas.ign.fr/oor#', ''), candidat['nomref']])
             pr.addFeatures([poly]) 
-                
-            # Sauvegarde les changements
             self.layerREF.commitChanges()
         
-            # ======================================================================================
+            # =================================================================
             # Layer OSM
             pr = self.layerCOMP.dataProvider()
             self.layerCOMP.startEditing()
-                
             for i in range(len(candList)):
                 if i > 0:
                     poly = QgsFeature()
@@ -441,30 +553,64 @@ class VisuValideMultiCriteriaMatching:
                     poly.setGeometry(QgsGeometry.fromWkt(candidat['geomcomp']))
                     
                     attrs = []
+                    attrs.append(str(candidat['num']))
                     attrs.append(str(candidat['id']))
+                    attrs.append(str(candidat['uri'].replace('http://purl.org/choucas.ign.fr/oor#', '')))
+                    attrs.append(str(candidat['nom']))
                     
-                    for j in range(len(self.ATTRS_NOM)):
-                        nom = self.ATTRS_NOM[j]
-                        attrs.append(candidat[nom])
-                        
                     for i in range (len(self.DISTANCE_NOM)):
                         nom = self.DISTANCE_NOM[i]
-                        s = float(candidat[nom])
-                        #print (s)
+                        s = candidat[nom]
                         attrs.append(s)
 
                     poly.setAttributes(attrs)
                     pr.addFeatures([poly]) 
-                
             # Sauvegarde les changements
             self.layerCOMP.commitChanges()
             
+            # =================================================================
+            # Layer LINK
+            self.layerLINK.setSubsetString(" ID_REF = '" + candidat['idref'] + "'")
+            
+            # =================================================================
             # Zoom
             self.zoom()
             
+        # =================================================================
         # remplir le tableau
         self.initTable(candList)
+        
+        # =================================================================
+        # validation
+        validation = -1
+        #self.dockwidget.rbTODO.setChecked(False)
+        cptLien = 0
+        self.featLINK = None
+        for feat in self.layerLINK.getFeatures():
+            validation = feat.attributes()[2]
+            cptLien += 1
+            self.featLINK = feat
+            self.idFeatLINK = feat.attributes()[0]
             
+        if cptLien == 0:
+            #self.dockwidget.btEdit.setEnabled(False)
+            self.dockwidget.rbERREUR.setEnabled(False)
+            self.dockwidget.rbVALIDE.setEnabled(False)
+            self.dockwidget.rbINDECIS.setEnabled(False)
+        else:
+            #self.dockwidget.btEdit.setEnabled(True)
+            self.dockwidget.rbERREUR.setEnabled(True)
+            self.dockwidget.rbVALIDE.setEnabled(True)
+            self.dockwidget.rbINDECIS.setEnabled(True)
+            
+        if validation == -1:
+            self.dockwidget.rbTODO.setChecked(True)
+        if validation == 0:
+            self.dockwidget.rbERREUR.setChecked(True)
+        if validation == 1:
+            self.dockwidget.rbVALIDE.setChecked(True)
+        if validation == 0.5:
+            self.dockwidget.rbINDECIS.setChecked(True)
         
     def zoom(self):
         # ZOOM
@@ -494,23 +640,21 @@ class VisuValideMultiCriteriaMatching:
                
               
     def removeFeatures(self):
+        # ===========================================
         self.layerREF.startEditing()
-    
         for feature in self.layerREF.getFeatures():
             self.layerREF.deleteFeature(feature.id())
-        
-        # commit to stop editing the layer
         self.layerREF.commitChanges()
         
         # ===========================================
-        
         self.layerCOMP.startEditing()
-    
         for feature in self.layerCOMP.getFeatures():
             self.layerCOMP.deleteFeature(feature.id())
-        
-        # commit to stop editing the layer
         self.layerCOMP.commitChanges()
+        
+        # ===========================================
+        self.layerLINK.setSubsetString("1=0")
+        
     
     
     def initTable(self, candList):
@@ -543,20 +687,18 @@ class VisuValideMultiCriteriaMatching:
                 item1 = QTableWidgetItem(str(candidat['id']))
                 self.dockwidget.tableCoordFeu.setItem(n, 0, item1)
                 
-                for i in range(len(self.ATTRS_NOM)):
-                    nom = self.ATTRS_NOM[i]
-                    itemDistance = QTableWidgetItem(str(candidat[nom]))    
-                    self.dockwidget.tableCoordFeu.setItem(n, 1 + i, itemDistance)
-                
+                #self.dockwidget.tableCoordFeu.setItem(n, 1, QTableWidgetItem(str(candidat['nom'])))
+                #uri = str(candidat['uri'].replace('http://purl.org/choucas.ign.fr/oor#', ''))
+                #self.dockwidget.tableCoordFeu.setItem(n, 2, QTableWidgetItem(uri))
                 
                 for i in range (len(self.DISTANCE_NOM)):
-                    
                     nom = self.DISTANCE_NOM[i]
                     itemDistance = QTableWidgetItem(str(candidat[nom]))    
-                    self.dockwidget.tableCoordFeu.setItem(n, 1 + len(self.ATTRS_NOM) + i, itemDistance)
+                    self.dockwidget.tableCoordFeu.setItem(n, 1 + i, itemDistance)
                     
                     s = float(candidat[nom])
-                    
+                    seuil1 = 0
+                    seuil2 = 0
                     if i == 0:
                         if self.dockwidget.D1_T1.isEnabled():
                             seuil1 = float(self.dockwidget.D1_T1.text())
@@ -565,41 +707,21 @@ class VisuValideMultiCriteriaMatching:
                     if i == 1:
                         if self.dockwidget.D2_T1.isEnabled():
                             seuil1 = float(self.dockwidget.D2_T1.text())
-                        if self.dockwidget.D2_T2.isEnabled():
-                            seuil2 = float(self.dockwidget.D2_T2.text())
                     if i == 2:
                         if self.dockwidget.D3_T1.isEnabled():
                             seuil1 = float(self.dockwidget.D3_T1.text())
-                        if self.dockwidget.D3_T2.isEnabled():
-                            seuil2 = float(self.dockwidget.D3_T2.text())
-                    if i == 3:
-                        if self.dockwidget.D4_T1.isEnabled():
-                            seuil1 = float(self.dockwidget.D4_T1.text())
-                        if self.dockwidget.D4_T2.isEnabled():
-                            seuil2 = float(self.dockwidget.D4_T2.text())
-                    if i == 4:
-                        if self.dockwidget.D5_T1.isEnabled():
-                            seuil1 = float(self.dockwidget.D5_T1.text())
-                        if self.dockwidget.D5_T2.isEnabled():
-                            seuil2 = float(self.dockwidget.D5_T2.text())
-                        
-                        
-                    # print (i)
+#                    # print (i)
                     if s < seuil1 and i < 2:
-                        self.dockwidget.tableCoordFeu.item(n, 1 + i + len(self.ATTRS_NOM)).setBackground(vert);
+                        self.dockwidget.tableCoordFeu.item(n, 1 + i).setBackground(vert);
                     elif s < seuil2 and i < 2:
-                        self.dockwidget.tableCoordFeu.item(n, 1 + i + len(self.ATTRS_NOM)).setBackground(orange);
+                        self.dockwidget.tableCoordFeu.item(n, 1 + i).setBackground(orange);
                     
                 isNA = False
                 if candidat['nom'] == 'NA':
                     isNA = True
-                
-                # print (candidat['decision'])
-                
                 # decision et resultat
                 if (isNA and candidat['decision'] == 'true'):
                     nbNonApp = nbNonApp + 1
-						
                 if (not isNA and candidat['decision'] == 'true'):
                     nbApp = nbApp + 1
                     labelRes = candidat['id']
@@ -638,16 +760,13 @@ class VisuValideMultiCriteriaMatching:
     
     
     def vide(self, table):
-
         self.dockwidget.tableCoordFeu.setRowCount(0)
-        self.dockwidget.tableCoordFeu.setColumnCount(len(self.ATTRS_NOM) + len(self.DISTANCE_NOM) + 1)
+        self.dockwidget.tableCoordFeu.setColumnCount(4)
         
         colHearder = []
         colHearder.append('id')
-        
-        for i in range (len(self.ATTRS_NOM)):
-            nom = self.ATTRS_NOM[i]
-            colHearder.append(nom)
+        #colHearder.append('nom')
+        #colHearder.append('uri')
         
         for i in range (len(self.DISTANCE_NOM)):
             nom = self.DISTANCE_NOM[i]
@@ -660,55 +779,8 @@ class VisuValideMultiCriteriaMatching:
                 self.dockwidget.labelSeuil2.setText(nom)
             if i == 2:
                 self.dockwidget.labelSeuil3.setText(nom)
-            if i == 3:
-                self.dockwidget.labelSeuil4.setText(nom)
-            if i == 4:
-                self.dockwidget.labelSeuil5.setText(nom)
-        
         # 
         table.setHorizontalHeaderLabels(colHearder)
         
         
     
-    def visuDistance(self):
-        # print (self.DISTANCE_NOM[0])
-        
-        nomAttr = ''
-#        if self.dockwidget.rbID.isChecked():
-#            nomAttr = 'position'
-#        
-#        for i in range (len(self.DISTANCE_NOM)):
-#            
-#            if i == 0:
-#                if self.dockwidget.rbD1.isChecked():
-#                    nomAttr = self.DISTANCE_NOM[i]
-#                    
-#            if i == 1:
-#                if self.dockwidget.rbD2.isChecked():
-#                    nomAttr = self.DISTANCE_NOM[i]
-#                    
-#            if i == 2:
-#                if self.dockwidget.rbD3.isChecked():
-#                    nomAttr = self.DISTANCE_NOM[i]
-#                    
-#            if i == 3:
-#                if self.dockwidget.rbD4.isChecked():
-#                    nomAttr = self.DISTANCE_NOM[i]
-#                    
-#            if i == 4:
-#                if self.dockwidget.rbD5.isChecked():
-#                    nomAttr = self.DISTANCE_NOM[i]
-#                    
-#        # print (nomAttr)
-#            
-#        
-#        if self.TYPE_GEOM == 'Point' or self.TYPE_GEOM == 'MultiPoint':
-#            self.layerCOMP = style.getCompPointStyle(self.layerCOMP)
-#        if self.TYPE_GEOM == 'Polygon' or self.TYPE_GEOM == 'MultiPolygon':
-#            self.layerCOMP = style.getCompPolygoneStyle(self.layerCOMP, nomAttr)
-#                
-#        #self.iface.mapCanvas().refresh()
-#        
-#        self.layerCOMP.triggerRepaint()
-#        self.iface.layerTreeView().refreshLayerSymbology(self.layerCOMP.id())
-#        

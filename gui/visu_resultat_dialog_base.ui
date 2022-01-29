@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>461</width>
-    <height>652</height>
+    <width>499</width>
+    <height>849</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -23,9 +23,9 @@
    <widget class="QPushButton" name="btFermer">
     <property name="geometry">
      <rect>
-      <x>400</x>
-      <y>530</y>
-      <width>51</width>
+      <x>180</x>
+      <y>354</y>
+      <width>111</width>
       <height>30</height>
      </rect>
     </property>
@@ -50,9 +50,9 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>60</y>
-      <width>371</width>
-      <height>71</height>
+      <y>53</y>
+      <width>451</width>
+      <height>111</height>
      </rect>
     </property>
     <property name="title">
@@ -62,9 +62,9 @@
      <property name="geometry">
       <rect>
        <x>300</x>
-       <y>30</y>
+       <y>24</y>
        <width>61</width>
-       <height>23</height>
+       <height>31</height>
       </rect>
      </property>
      <property name="text">
@@ -75,9 +75,9 @@
      <property name="geometry">
       <rect>
        <x>240</x>
-       <y>30</y>
+       <y>24</y>
        <width>61</width>
-       <height>23</height>
+       <height>31</height>
       </rect>
      </property>
      <property name="text">
@@ -88,9 +88,9 @@
      <property name="geometry">
       <rect>
        <x>170</x>
-       <y>30</y>
-       <width>61</width>
-       <height>21</height>
+       <y>24</y>
+       <width>71</width>
+       <height>31</height>
       </rect>
      </property>
     </widget>
@@ -107,13 +107,49 @@
       <string>Feature ref en cours:</string>
      </property>
     </widget>
+    <widget class="QLabel" name="label_7">
+     <property name="geometry">
+      <rect>
+       <x>120</x>
+       <y>60</y>
+       <width>41</width>
+       <height>17</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>URI:</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_10">
+     <property name="geometry">
+      <rect>
+       <x>110</x>
+       <y>82</y>
+       <width>41</width>
+       <height>17</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Nom:</string>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="fieldREFUri">
+     <property name="geometry">
+      <rect>
+       <x>170</x>
+       <y>54</y>
+       <width>271</width>
+       <height>25</height>
+      </rect>
+     </property>
+    </widget>
    </widget>
    <widget class="QPushButton" name="btZoomGrille">
     <property name="geometry">
      <rect>
-      <x>400</x>
-      <y>490</y>
-      <width>51</width>
+      <x>290</x>
+      <y>354</y>
+      <width>111</width>
       <height>30</height>
      </rect>
     </property>
@@ -125,8 +161,8 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>140</y>
-      <width>451</width>
+      <y>650</y>
+      <width>461</width>
       <height>161</height>
      </rect>
     </property>
@@ -161,9 +197,9 @@
    <widget class="QgsFileWidget" name="fileResultat">
     <property name="geometry">
      <rect>
-      <x>40</x>
-      <y>30</y>
-      <width>291</width>
+      <x>20</x>
+      <y>25</y>
+      <width>441</width>
       <height>27</height>
      </rect>
     </property>
@@ -172,7 +208,7 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>10</y>
+      <y>8</y>
       <width>251</width>
       <height>16</height>
      </rect>
@@ -184,8 +220,8 @@
    <widget class="QLabel" name="labelSeuil1">
     <property name="geometry">
      <rect>
-      <x>20</x>
-      <y>350</y>
+      <x>70</x>
+      <y>420</y>
       <width>111</width>
       <height>20</height>
      </rect>
@@ -195,10 +231,13 @@
     </property>
    </widget>
    <widget class="QLineEdit" name="D1_T1">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
     <property name="geometry">
      <rect>
-      <x>140</x>
-      <y>350</y>
+      <x>190</x>
+      <y>420</y>
       <width>70</width>
       <height>20</height>
      </rect>
@@ -208,10 +247,13 @@
     </property>
    </widget>
    <widget class="QLineEdit" name="D1_T2">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
     <property name="geometry">
      <rect>
-      <x>210</x>
-      <y>350</y>
+      <x>260</x>
+      <y>420</y>
       <width>70</width>
       <height>20</height>
      </rect>
@@ -223,8 +265,8 @@
    <widget class="QLabel" name="labelSeuil2">
     <property name="geometry">
      <rect>
-      <x>20</x>
-      <y>370</y>
+      <x>70</x>
+      <y>440</y>
       <width>111</width>
       <height>20</height>
      </rect>
@@ -235,12 +277,12 @@
    </widget>
    <widget class="QLabel" name="labelSeuil3">
     <property name="enabled">
-     <bool>false</bool>
+     <bool>true</bool>
     </property>
     <property name="geometry">
      <rect>
-      <x>20</x>
-      <y>390</y>
+      <x>70</x>
+      <y>460</y>
       <width>111</width>
       <height>20</height>
      </rect>
@@ -249,27 +291,14 @@
      <string>Seuils distance 3:</string>
     </property>
    </widget>
-   <widget class="QLabel" name="labelSeuil4">
+   <widget class="QLineEdit" name="D2_T1">
     <property name="enabled">
      <bool>false</bool>
     </property>
     <property name="geometry">
      <rect>
-      <x>20</x>
-      <y>410</y>
-      <width>111</width>
-      <height>20</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Seuils distance 4:</string>
-    </property>
-   </widget>
-   <widget class="QLineEdit" name="D2_T1">
-    <property name="geometry">
-     <rect>
-      <x>140</x>
-      <y>370</y>
+      <x>190</x>
+      <y>440</y>
       <width>70</width>
       <height>20</height>
      </rect>
@@ -284,69 +313,8 @@
     </property>
     <property name="geometry">
      <rect>
-      <x>140</x>
-      <y>390</y>
-      <width>70</width>
-      <height>20</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string/>
-    </property>
-   </widget>
-   <widget class="QLineEdit" name="D4_T1">
-    <property name="enabled">
-     <bool>false</bool>
-    </property>
-    <property name="geometry">
-     <rect>
-      <x>140</x>
-      <y>410</y>
-      <width>70</width>
-      <height>20</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string/>
-    </property>
-   </widget>
-   <widget class="QLineEdit" name="D2_T2">
-    <property name="geometry">
-     <rect>
-      <x>210</x>
-      <y>370</y>
-      <width>70</width>
-      <height>20</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string/>
-    </property>
-   </widget>
-   <widget class="QLineEdit" name="D3_T2">
-    <property name="enabled">
-     <bool>false</bool>
-    </property>
-    <property name="geometry">
-     <rect>
-      <x>210</x>
-      <y>390</y>
-      <width>70</width>
-      <height>20</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string/>
-    </property>
-   </widget>
-   <widget class="QLineEdit" name="D4_T2">
-    <property name="enabled">
-     <bool>false</bool>
-    </property>
-    <property name="geometry">
-     <rect>
-      <x>210</x>
-      <y>410</y>
+      <x>190</x>
+      <y>460</y>
       <width>70</width>
       <height>20</height>
      </rect>
@@ -358,8 +326,8 @@
    <widget class="QLabel" name="label_8">
     <property name="geometry">
      <rect>
-      <x>170</x>
-      <y>330</y>
+      <x>220</x>
+      <y>400</y>
       <width>21</width>
       <height>20</height>
      </rect>
@@ -371,8 +339,8 @@
    <widget class="QLabel" name="label_9">
     <property name="geometry">
      <rect>
-      <x>240</x>
-      <y>330</y>
+      <x>290</x>
+      <y>400</y>
       <width>21</width>
       <height>20</height>
      </rect>
@@ -381,73 +349,25 @@
      <string>T2</string>
     </property>
    </widget>
-   <widget class="QLabel" name="labelSeuil5">
-    <property name="enabled">
-     <bool>false</bool>
-    </property>
-    <property name="geometry">
-     <rect>
-      <x>20</x>
-      <y>430</y>
-      <width>111</width>
-      <height>20</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Seuils distance 5:</string>
-    </property>
-   </widget>
-   <widget class="QLineEdit" name="D5_T1">
-    <property name="enabled">
-     <bool>false</bool>
-    </property>
-    <property name="geometry">
-     <rect>
-      <x>140</x>
-      <y>430</y>
-      <width>70</width>
-      <height>20</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string/>
-    </property>
-   </widget>
-   <widget class="QLineEdit" name="D5_T2">
-    <property name="enabled">
-     <bool>false</bool>
-    </property>
-    <property name="geometry">
-     <rect>
-      <x>210</x>
-      <y>430</y>
-      <width>70</width>
-      <height>20</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string/>
-    </property>
-   </widget>
    <widget class="QGroupBox" name="groupBox">
     <property name="geometry">
      <rect>
-      <x>30</x>
-      <y>490</y>
-      <width>341</width>
-      <height>131</height>
+      <x>10</x>
+      <y>530</y>
+      <width>461</width>
+      <height>111</height>
      </rect>
     </property>
     <property name="title">
-     <string/>
+     <string>Résultat</string>
     </property>
     <widget class="QLabel" name="label">
      <property name="geometry">
       <rect>
-       <x>40</x>
-       <y>30</y>
+       <x>60</x>
+       <y>38</y>
        <width>53</width>
-       <height>16</height>
+       <height>21</height>
       </rect>
      </property>
      <property name="text">
@@ -455,11 +375,14 @@
      </property>
     </widget>
     <widget class="QLineEdit" name="pign1">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
      <property name="geometry">
       <rect>
-       <x>90</x>
-       <y>30</y>
-       <width>113</width>
+       <x>110</x>
+       <y>38</y>
+       <width>101</width>
        <height>22</height>
       </rect>
      </property>
@@ -467,10 +390,10 @@
     <widget class="QLabel" name="label_2">
      <property name="geometry">
       <rect>
-       <x>40</x>
-       <y>60</y>
+       <x>220</x>
+       <y>38</y>
        <width>53</width>
-       <height>16</height>
+       <height>21</height>
       </rect>
      </property>
      <property name="text">
@@ -478,21 +401,27 @@
      </property>
     </widget>
     <widget class="QLineEdit" name="pign2">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
      <property name="geometry">
       <rect>
-       <x>90</x>
-       <y>60</y>
-       <width>113</width>
+       <x>270</x>
+       <y>38</y>
+       <width>131</width>
        <height>22</height>
       </rect>
      </property>
     </widget>
     <widget class="QLineEdit" name="labelResultat">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
      <property name="geometry">
       <rect>
-       <x>40</x>
-       <y>90</y>
-       <width>291</width>
+       <x>20</x>
+       <y>70</y>
+       <width>411</width>
        <height>25</height>
       </rect>
      </property>
@@ -501,8 +430,8 @@
    <widget class="QLabel" name="label_3">
     <property name="geometry">
      <rect>
-      <x>20</x>
-      <y>460</y>
+      <x>70</x>
+      <y>490</y>
       <width>111</width>
       <height>17</height>
      </rect>
@@ -512,103 +441,222 @@
     </property>
    </widget>
    <widget class="QLineEdit" name="seuilP">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
     <property name="geometry">
      <rect>
-      <x>140</x>
-      <y>460</y>
+      <x>190</x>
+      <y>490</y>
       <width>141</width>
       <height>21</height>
      </rect>
     </property>
    </widget>
-   <widget class="QRadioButton" name="rbID">
+   <widget class="QLabel" name="label_4">
     <property name="geometry">
      <rect>
       <x>300</x>
-      <y>320</y>
-      <width>112</width>
-      <height>23</height>
+      <y>256</y>
+      <width>81</width>
+      <height>21</height>
      </rect>
     </property>
     <property name="text">
-     <string/>
-    </property>
-    <property name="checked">
-     <bool>true</bool>
+     <string>Nb validé:</string>
     </property>
    </widget>
-   <widget class="QRadioButton" name="rbD1">
+   <widget class="QLabel" name="label_5">
     <property name="geometry">
      <rect>
-      <x>300</x>
-      <y>350</y>
-      <width>112</width>
-      <height>23</height>
+      <x>270</x>
+      <y>314</y>
+      <width>111</width>
+      <height>17</height>
      </rect>
     </property>
     <property name="text">
-     <string/>
+     <string>Nb cas difficile:</string>
     </property>
    </widget>
-   <widget class="QRadioButton" name="rbD2">
+   <widget class="QLineEdit" name="fieldNbValidation">
     <property name="geometry">
      <rect>
-      <x>300</x>
-      <y>370</y>
-      <width>112</width>
-      <height>23</height>
+      <x>380</x>
+      <y>254</y>
+      <width>51</width>
+      <height>25</height>
      </rect>
-    </property>
-    <property name="text">
-     <string/>
     </property>
    </widget>
-   <widget class="QRadioButton" name="rbD3">
-    <property name="enabled">
-     <bool>false</bool>
-    </property>
+   <widget class="QLineEdit" name="fieldNbValidationProbleme">
     <property name="geometry">
      <rect>
-      <x>300</x>
-      <y>390</y>
-      <width>112</width>
-      <height>23</height>
+      <x>380</x>
+      <y>304</y>
+      <width>51</width>
+      <height>25</height>
      </rect>
-    </property>
-    <property name="text">
-     <string/>
     </property>
    </widget>
-   <widget class="QRadioButton" name="rbD4">
-    <property name="enabled">
-     <bool>false</bool>
-    </property>
+   <widget class="QRadioButton" name="rbTODO">
     <property name="geometry">
      <rect>
-      <x>300</x>
-      <y>410</y>
+      <x>14</x>
+      <y>220</y>
       <width>112</width>
       <height>23</height>
      </rect>
     </property>
     <property name="text">
-     <string/>
+     <string>A faire (-1)</string>
     </property>
    </widget>
-   <widget class="QRadioButton" name="rbD5">
-    <property name="enabled">
-     <bool>false</bool>
-    </property>
+   <widget class="QRadioButton" name="rbVALIDE">
     <property name="geometry">
      <rect>
-      <x>300</x>
-      <y>430</y>
-      <width>112</width>
+      <x>14</x>
+      <y>250</y>
+      <width>191</width>
       <height>23</height>
      </rect>
     </property>
     <property name="text">
-     <string/>
+     <string>Appariement validé (1)</string>
+    </property>
+   </widget>
+   <widget class="QRadioButton" name="rbERREUR">
+    <property name="geometry">
+     <rect>
+      <x>14</x>
+      <y>280</y>
+      <width>201</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Appariement en erreur (0)</string>
+    </property>
+   </widget>
+   <widget class="QRadioButton" name="rbINDECIS">
+    <property name="geometry">
+     <rect>
+      <x>14</x>
+      <y>310</y>
+      <width>131</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Cas difficile (2)</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="btNom">
+    <property name="geometry">
+     <rect>
+      <x>200</x>
+      <y>180</y>
+      <width>121</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Nom + URI</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="btID">
+    <property name="geometry">
+     <rect>
+      <x>130</x>
+      <y>180</y>
+      <width>71</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Id</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="btSauvegarderFermer">
+    <property name="geometry">
+     <rect>
+      <x>70</x>
+      <y>354</y>
+      <width>111</width>
+      <height>30</height>
+     </rect>
+    </property>
+    <property name="toolTip">
+     <string>Fermer le plugin</string>
+    </property>
+    <property name="text">
+     <string>Sauv &amp; close</string>
+    </property>
+    <property name="icon">
+     <iconset>
+      <normaloff>:/plugins/VisuValideMultiCriteriaMatching/img/close.png</normaloff>:/plugins/VisuValideMultiCriteriaMatching/img/close.png</iconset>
+    </property>
+    <property name="iconSize">
+     <size>
+      <width>18</width>
+      <height>18</height>
+     </size>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_6">
+    <property name="geometry">
+     <rect>
+      <x>280</x>
+      <y>281</y>
+      <width>101</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Nb cas erreur:</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="fieldNbErreur">
+    <property name="geometry">
+     <rect>
+      <x>380</x>
+      <y>279</y>
+      <width>51</width>
+      <height>25</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="fieldREFNom">
+    <property name="geometry">
+     <rect>
+      <x>180</x>
+      <y>131</y>
+      <width>271</width>
+      <height>25</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_11">
+    <property name="geometry">
+     <rect>
+      <x>290</x>
+      <y>228</y>
+      <width>91</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Nb à faire:</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="fieldNbTODO">
+    <property name="geometry">
+     <rect>
+      <x>380</x>
+      <y>230</y>
+      <width>51</width>
+      <height>25</height>
+     </rect>
     </property>
    </widget>
    <zorder>label_grille</zorder>
@@ -622,27 +670,29 @@
    <zorder>D1_T2</zorder>
    <zorder>labelSeuil2</zorder>
    <zorder>labelSeuil3</zorder>
-   <zorder>labelSeuil4</zorder>
    <zorder>D2_T1</zorder>
    <zorder>D3_T1</zorder>
-   <zorder>D4_T1</zorder>
-   <zorder>D2_T2</zorder>
-   <zorder>D3_T2</zorder>
-   <zorder>D4_T2</zorder>
    <zorder>label_8</zorder>
    <zorder>label_9</zorder>
-   <zorder>labelSeuil5</zorder>
-   <zorder>D5_T1</zorder>
-   <zorder>D5_T2</zorder>
    <zorder>groupBox</zorder>
    <zorder>label_3</zorder>
    <zorder>seuilP</zorder>
-   <zorder>rbID</zorder>
-   <zorder>rbD1</zorder>
-   <zorder>rbD2</zorder>
-   <zorder>rbD3</zorder>
-   <zorder>rbD4</zorder>
-   <zorder>rbD5</zorder>
+   <zorder>label_4</zorder>
+   <zorder>label_5</zorder>
+   <zorder>fieldNbValidation</zorder>
+   <zorder>fieldNbValidationProbleme</zorder>
+   <zorder>rbTODO</zorder>
+   <zorder>rbVALIDE</zorder>
+   <zorder>rbERREUR</zorder>
+   <zorder>rbINDECIS</zorder>
+   <zorder>btNom</zorder>
+   <zorder>btID</zorder>
+   <zorder>btSauvegarderFermer</zorder>
+   <zorder>label_6</zorder>
+   <zorder>fieldNbErreur</zorder>
+   <zorder>fieldREFNom</zorder>
+   <zorder>label_11</zorder>
+   <zorder>fieldNbTODO</zorder>
   </widget>
  </widget>
  <customwidgets>
