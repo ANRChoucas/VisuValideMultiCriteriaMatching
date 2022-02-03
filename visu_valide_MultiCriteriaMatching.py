@@ -238,6 +238,13 @@ class VisuValideMultiCriteriaMatching:
                 
                 self.dockwidget.fieldREFNom.setText("")
                 self.dockwidget.fieldREFUri.setText("")
+                
+                self.dockwidget.btNextApp.clicked.connect(self.doSuivantAppariement)
+                self.dockwidget.btNextValid.clicked.connect(self.doSuivantValide)
+                self.dockwidget.btNextTodo.clicked.connect(self.doSuivantTodo)
+                self.dockwidget.btNextDifficile.clicked.connect(self.doSuivantDifficile)
+                self.dockwidget.btNextErreur.clicked.connect(self.doSuivantErreur)
+                
 
         self.iface.mapCanvas().refresh()
                 
@@ -609,9 +616,24 @@ class VisuValideMultiCriteriaMatching:
             self.dockwidget.rbERREUR.setChecked(True)
         if validation == 1:
             self.dockwidget.rbVALIDE.setChecked(True)
-        if validation == 0.5:
+        if validation == 2:
             self.dockwidget.rbINDECIS.setChecked(True)
+            
+            
+    def getLabelValidation(self, id):
+        # validation
+        validation = -1
+        cptLien = 0
         
+        self.layerLINK.setSubsetString(" ID_REF = '" + id + "'")
+        for liens in self.layerLINK.getFeatures():
+            attrs = liens.attributes()
+            if attrs[0] == id:
+                validation = attrs[2]
+                cptLien += 1
+        return validation
+        
+    
     def zoom(self):
         # ZOOM
         extent = self.layerCOMP.extent()
@@ -634,6 +656,124 @@ class VisuValideMultiCriteriaMatching:
         # On recupere l'id en cours
         currId = self.dockwidget.currentId.text()
         id = util.getLigneSuiv(self.uriGrille, currId)
+        
+        self.dockwidget.currentId.setText(str(id))
+        self.afficheContexte(id)
+        
+    
+    def doSuivantValide(self):
+        # On recupere l'id en cours
+        currId = self.dockwidget.currentId.text()
+        
+        cpt = 0
+        while cpt < 15000:
+            id = util.getLigneSuiv(self.uriGrille, currId)
+            if id == -1:
+                break
+        
+            candList = util.getCandidat(self.uriGrille, id, self.DISTANCE_NOM)
+            labels = util.getLabelResultat(candList)
+            lab = labels[0]
+            valid = self.getLabelValidation(id)
+            if 'Appariement' == lab and valid == 1:
+                break
+                
+            currId = id
+            cpt += 1
+        
+        self.dockwidget.currentId.setText(str(id))
+        self.afficheContexte(id)
+        
+    def doSuivantTodo(self):
+        # On recupere l'id en cours
+        currId = self.dockwidget.currentId.text()
+        
+        cpt = 0
+        while cpt < 15000:
+            id = util.getLigneSuiv(self.uriGrille, currId)
+            if id == -1:
+                break
+        
+            candList = util.getCandidat(self.uriGrille, id, self.DISTANCE_NOM)
+            labels = util.getLabelResultat(candList)
+            lab = labels[0]
+            valid = self.getLabelValidation(id)
+            if 'Appariement' == lab and valid == -1:
+                break
+                
+            currId = id
+            cpt += 1
+        
+        self.dockwidget.currentId.setText(str(id))
+        self.afficheContexte(id)
+        
+        
+    def doSuivantAppariement(self):
+        # On recupere l'id en cours
+        currId = self.dockwidget.currentId.text()
+        
+        cpt = 0
+        while cpt < 15000:
+            id = util.getLigneSuiv(self.uriGrille, currId)
+            if id == -1:
+                break
+        
+            candList = util.getCandidat(self.uriGrille, id, self.DISTANCE_NOM)
+            labels = util.getLabelResultat(candList)
+            lab = labels[0]
+            if 'Appariement' == lab:
+                break
+                
+            currId = id
+            cpt += 1
+        
+        self.dockwidget.currentId.setText(str(id))
+        self.afficheContexte(id)
+        
+        
+    def doSuivantDifficile(self):
+        # On recupere l'id en cours
+        currId = self.dockwidget.currentId.text()
+        
+        cpt = 0
+        while cpt < 15000:
+            id = util.getLigneSuiv(self.uriGrille, currId)
+            if id == -1:
+                break
+        
+            candList = util.getCandidat(self.uriGrille, id, self.DISTANCE_NOM)
+            labels = util.getLabelResultat(candList)
+            lab = labels[0]
+            valid = self.getLabelValidation(id)
+            if 'Appariement' == lab and valid == 2:
+                break
+                
+            currId = id
+            cpt += 1
+        
+        self.dockwidget.currentId.setText(str(id))
+        self.afficheContexte(id)
+        
+    
+    def doSuivantErreur(self):
+        # On recupere l'id en cours
+        currId = self.dockwidget.currentId.text()
+        
+        cpt = 0
+        while cpt < 15000:
+            id = util.getLigneSuiv(self.uriGrille, currId)
+            if id == -1:
+                break
+        
+            candList = util.getCandidat(self.uriGrille, id, self.DISTANCE_NOM)
+            labels = util.getLabelResultat(candList)
+            lab = labels[0]
+            valid = self.getLabelValidation(id)
+            if 'Appariement' == lab and valid == 0:
+                break
+                
+            currId = id
+            cpt += 1
         
         self.dockwidget.currentId.setText(str(id))
         self.afficheContexte(id)

@@ -98,7 +98,10 @@ def getLignePrec(uriResultat, currId):
             if noligne > 8:
                 # split
                 tab = line.split(";")
-                idref = tab[0]
+                if len(tab) < 2:
+                    tab = line.split(",")
+                
+                idref = tab[0].replace('"', '')
                 
                 if currId == "-1":
                     id = idref
@@ -128,7 +131,10 @@ def getLigneSuiv(uriResultat, currId):
             if noligne > 8:
                 # split
                 tab = line.split(";")
-                idref = tab[0]
+                if len(tab) < 2:
+                    tab = line.split(",")
+                    
+                idref = tab[0].replace('"', '')
                 
                 if stop and currId != idref:
                     id = idref
@@ -145,11 +151,31 @@ def getLigneSuiv(uriResultat, currId):
         file.close()
 
     return id
+
+
+def getsep(uriResultat):
+    with open(uriResultat, 'r') as file:
+        noligne = 0
+        
+        for line in file:
+            noligne = noligne + 1
+            
+            if noligne > 8:
+                # split
+                tab = line.split(";")
+                if len(tab) < 2:
+                    return ","
+                else:
+                    return ";"
+        file.close()
     
+    return ";"
+
 
 def getRefInfo(uriResultat, currId):
+    sep = getsep(uriResultat)
     with open(uriResultat, 'r') as file:
-        reader = csv.reader(file, quotechar='"', delimiter=';',
+        reader = csv.reader(file, quotechar='"', delimiter=sep,
                      quoting=csv.QUOTE_ALL, skipinitialspace=True)
         noligne = 0
         for tab in reader:
@@ -164,9 +190,9 @@ def getRefInfo(uriResultat, currId):
 
 def getCandidat(uriResultat, currId, NOM_DISTANCES):
     candList = []
-    
+    sep = getsep(uriResultat)
     with open(uriResultat, 'r') as file:
-        reader = csv.reader(file, quotechar='"', delimiter=';',
+        reader = csv.reader(file, quotechar='"', delimiter=sep,
                      quoting=csv.QUOTE_ALL, skipinitialspace=True)
         noligne = 0
         for tab in reader:
@@ -252,14 +278,14 @@ def getLabelResultat(candList):
 
 def lienappariement(uriResultat, NOM_DISTANCES):
     LINKS = []
-    
+    sep = getsep(uriResultat)
     with open(uriResultat, 'r') as file:
         noligne = 0
         idrefold = '-1'
         for line in file:
             if noligne > 7:
-                tab = line.split(";")
-                idref = tab[0]
+                tab = line.split(sep)
+                idref = tab[0].replace('"', '')
                 if idref == idrefold:
                     continue
                 
