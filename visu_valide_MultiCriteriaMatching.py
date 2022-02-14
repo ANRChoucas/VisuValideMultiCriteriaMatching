@@ -529,7 +529,7 @@ class VisuValideMultiCriteriaMatching:
     def afficheContexte(self, currId):
         # =====================================================================
         self.removeFeatures()
-        
+        #print (currId)
         d = util.getRefInfo(self.uriGrille, currId)
         if d!= None:
             self.dockwidget.fieldREFNom.setText(d[0])
@@ -655,7 +655,9 @@ class VisuValideMultiCriteriaMatching:
         
         # On recupere l'id en cours
         currId = self.dockwidget.currentId.text()
+        #print (currId)
         id = util.getLigneSuiv(self.uriGrille, currId)
+        #print ('id', id)
         
         self.dockwidget.currentId.setText(str(id))
         self.afficheContexte(id)

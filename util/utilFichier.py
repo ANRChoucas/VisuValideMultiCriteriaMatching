@@ -89,19 +89,22 @@ def getLignePrec(uriResultat, currId):
     id = -1
     idref = -1
     
+    sep = getsep(uriResultat)
     with open(uriResultat, 'r') as file:
+        reader = csv.reader(file, quotechar='"', delimiter=sep,
+                     quoting=csv.QUOTE_ALL, skipinitialspace=True)
+    
         noligne = 0
         
-        for line in file:
+        for tab in reader:
+            if len(tab) < 1:
+                continue
+            
             noligne = noligne + 1
             
             if noligne > 8:
                 # split
-                tab = line.split(";")
-                if len(tab) < 2:
-                    tab = line.split(",")
-                
-                idref = tab[0].replace('"', '')
+                idref = tab[0]
                 
                 if currId == "-1":
                     id = idref
@@ -122,19 +125,19 @@ def getLigneSuiv(uriResultat, currId):
     stop = False
     idref = -1
     
+    sep = getsep(uriResultat)
     with open(uriResultat, 'r') as file:
+        reader = csv.reader(file, quotechar='"', delimiter=sep,
+                     quoting=csv.QUOTE_ALL, skipinitialspace=True)
         noligne = 0
-        
-        for line in file:
+        for tab in reader:
+            if len(tab) < 1:
+                continue
             noligne = noligne + 1
-            
             if noligne > 8:
+                # print (line, '\n')
                 # split
-                tab = line.split(";")
-                if len(tab) < 2:
-                    tab = line.split(",")
-                    
-                idref = tab[0].replace('"', '')
+                idref = tab[0]
                 
                 if stop and currId != idref:
                     id = idref
@@ -179,6 +182,8 @@ def getRefInfo(uriResultat, currId):
                      quoting=csv.QUOTE_ALL, skipinitialspace=True)
         noligne = 0
         for tab in reader:
+            if len(tab) < 1:
+                continue
             noligne = noligne + 1
             if noligne > 8:
                 idref = tab[0]
@@ -191,12 +196,15 @@ def getRefInfo(uriResultat, currId):
 def getCandidat(uriResultat, currId, NOM_DISTANCES):
     candList = []
     sep = getsep(uriResultat)
+    # print (sep)
     with open(uriResultat, 'r') as file:
         reader = csv.reader(file, quotechar='"', delimiter=sep,
                      quoting=csv.QUOTE_ALL, skipinitialspace=True)
         noligne = 0
         for tab in reader:
             
+            if len(tab) < 1:
+                continue
     
     #with open(uriResultat, 'r') as file:
     #    noligne = 0
@@ -206,6 +214,7 @@ def getCandidat(uriResultat, currId, NOM_DISTANCES):
             if noligne > 8:
                 # split
                 #tab = line.split(";")
+                #print (tab)
                 idref = tab[0]
                     
                 if currId == idref:
